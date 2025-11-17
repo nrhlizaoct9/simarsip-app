@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIMARSIP App</title>
+
+  <!-- Framework7 CSS -->
+  <link rel="stylesheet" href="node_modules/framework7/framework7-bundle.min.css">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7-icons/css/framework7-icons.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="my-app.css">
+</head>
+
+<body>
+  <div id="app">
+    <div class="view view-main">
+      <div data-name="home" class="page">
+
+        <!-- NAVBAR -->
+        <div class="navbar">
+          <div class="navbar-bg"></div>
+          <div class="navbar-inner">
+            <div class="title">SIMARSIP APP</div>
+            <div class="right">
+              <div class="user-profile">
+                <i class="f7-icons">person_circle</i>
+                <span>Halo, HMIF!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGE CONTENT -->
+        <div class="page-content">
+
+          <!-- WELCOME BANNER -->
+          <div class="welcome-banner">
+            <h3>Selamat Datang!</h3>
+            <p>Kelola pengajuan surat dan peminjaman dengan mudah</p>
+          </div>
+
+          <!-- SEARCH BAR -->
+          <div class="searchbar-custom">
+            <input type="text" placeholder="Cari pengajuan...">
+            <i class="f7-icons search-icon">search</i>
+          </div>
+
+          <!-- AJUKAN SURAT BARU -->
+          <div class="block-title">Ajukan Surat Baru</div>
+
+          <div class="menu-row">
+            <div class="menu-card" id="btn-room">
+              <i class="f7-icons menu-icon">square_stack_3d_up</i>
+              <span>Peminjaman Ruangan</span>
+            </div>
+
+            <div class="menu-card" id="btn-dispen">
+              <i class="f7-icons menu-icon">doc_person_fill</i>
+              <span>Surat Dispen</span>
+            </div>
+
+            <div class="menu-card" id="btn-item">
+              <i class="f7-icons menu-icon">cube_box_fill</i>
+              <span>Peminjaman Peralatan</span>
+            </div>
+          </div>
+
+          <!-- STATUS PENGAJUAN -->
+          <div class="block-title">Status Pengajuan Terakhir</div>
+
+          <div class="status-card" id="status-1">
+            <div class="status-card-content">
+              <strong>Peminjaman Ruangan - Lab Komputer</strong>
+              <small>10/06/2025 - 15:00-17:00</small>
+            </div>
+            <div class="badge-approve">Disetujui</div>
+          </div>
+
+          <div class="status-card" id="status-2">
+            <div class="status-card-content">
+              <strong>Peminjaman Peralatan - Proyektor</strong>
+              <small>10/06/2025 - 2 hari</small>
+            </div>
+            <div class="badge-wait">Menunggu</div>
+          </div>
+
+          <div class="status-card" id="status-3">
+            <div class="status-card-content">
+              <strong>Surat Dispensasi - Acara Kampus</strong>
+              <small>09/06/2025</small>
+            </div>
+            <div class="badge-approve">Disetujui</div>
+          </div>
+
+          <div class="status-card" id="status-4">
+            <div class="status-card-content">
+              <strong>Peminjaman Ruangan - Aula</strong>
+              <small>08/06/2025 - 09:00-12:00</small>
+            </div>
+            <div class="badge-reject">Ditolak</div>
+          </div>
+
+          <!-- LINK LIHAT SEMUA RIWAYAT -->
+          <div class="see-more-container">
+            <a href="#" class="see-more" id="btn-all-history">
+              <span>Lihat Semua Riwayat</span>
+              <i class="f7-icons">chevron_right</i>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- TOOLBAR BAWAH -->
+        <div class="toolbar toolbar-bottom">
+          <div class="toolbar-inner">
+            <a href="#" class="link active">
+              <div class="link-content">
+                <i class="f7-icons">house_fill</i>
+                <span>Beranda</span>
+              </div>
+            </a>
+            <a href="#" class="link" id="btn-calendar">
+              <div class="link-content">
+                <i class="f7-icons">calendar</i>
+                <span>Kalender</span>
+              </div>
+            </a>
+            <a href="#" class="link" id="btn-notification">
+              <div class="link-content">
+                <i class="f7-icons">bell_fill</i>
+                <span>Notifikasi</span>
+              </div>
+            </a>
+            <a href="#" class="link" id="btn-help">
+              <div class="link-content">
+                <i class="f7-icons">question_circle</i>
+                <span>Bantuan</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="node_modules/framework7/framework7-bundle.min.js"></script>
+  <script src="my-app.js"></script>
+</body>
+</html>
