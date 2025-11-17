@@ -4,7 +4,10 @@ var app = new Framework7({
   name: 'SIMARSIP App',
   theme: 'auto',
   routes: [
-    // Routes akan ditambahkan nanti untuk navigasi antar halaman
+    {
+      path: '/history/',
+      name: 'history'
+    },
     {
       path: '/form-ruangan/',
       component: `
@@ -37,6 +40,102 @@ var app = new Framework7({
   // Enable auto dark theme
   autoDarkTheme: true
 });
+
+// Data riwayat lengkap
+var allHistoryData = [
+  {
+    id: 1,
+    title: 'Peminjaman Ruangan - Lab Komputer',
+    date: '10/06/2025 - 15:00-17:00',
+    description: 'Kegiatan: Workshop Pemrograman',
+    status: 'approve',
+    dokumen: [
+      { name: 'Surat Permohonan.pdf', url: '#' }
+    ]
+  },
+  {
+    id: 2,
+    title: 'Peminjaman Peralatan - Proyektor',
+    date: '10/06/2025 - 2 hari',
+    description: 'Barang: Proyektor Epson (1 unit)',
+    status: 'wait',
+    dokumen: [
+      { name: 'Surat Permohonan.pdf', url: '#' }
+    ]
+  },
+  {
+    id: 3,
+    title: 'Surat Dispensasi - Acara Kampus',
+    date: '09/06/2025',
+    description: 'Alasan: Mengikuti Lomba Hackathon',
+    status: 'approve',
+    dokumen: [
+      { name: 'Bukti Lomba.jpg', url: '#' }
+    ]
+  },
+  {
+    id: 4,
+    title: 'Peminjaman Ruangan - Aula',
+    date: '08/06/2025 - 09:00-12:00',
+    description: 'Kegiatan: Seminar Kewirausahaan',
+    status: 'reject',
+    dokumen: []
+  },
+  {
+    id: 5,
+    title: 'Peminjaman Peralatan - Sound System',
+    date: '07/06/2025 - 3 hari',
+    description: 'Barang: Sound System Denon',
+    status: 'approve',
+    dokumen: [
+      { name: 'Surat Permohonan.pdf', url: '#' }
+    ]
+  },
+  {
+    id: 6,
+    title: 'Surat Dispensasi - Sakit',
+    date: '06/06/2025',
+    description: 'Alasan: Sakit dengan sertifikat dokter',
+    status: 'verified',
+    dokumen: [
+      { name: 'Surat Dokter.pdf', url: '#' }
+    ]
+  },
+  {
+    id: 7,
+    title: 'Peminjaman Ruangan - Ruang Rapat',
+    date: '05/06/2025 - 10:00-12:00',
+    description: 'Kegiatan: Rapat Organisasi',
+    status: 'wait',
+    dokumen: []
+  },
+  {
+    id: 8,
+    title: 'Peminjaman Peralatan - Kamera',
+    date: '04/06/2025 - 2 hari',
+    description: 'Barang: Kamera Canon EOS',
+    status: 'approve',
+    dokumen: [
+      { name: 'Surat Permohonan.pdf', url: '#' }
+    ]
+  },
+  {
+    id: 9,
+    title: 'Surat Dispensasi - Kompetisi',
+    date: '03/06/2025',
+    description: 'Alasan: Mengikuti Kompetisi IT Nasional',
+    status: 'reject',
+    dokumen: []
+  },
+  {
+    id: 10,
+    title: 'Peminjaman Ruangan - Lab Terpadu',
+    date: '02/06/2025 - 14:00-16:00',
+    description: 'Kegiatan: Lab Praktikum Jaringan',
+    status: 'approve',
+    dokumen: []
+  }
+];
 
 // Main application logic
 var mainView = app.views.create('.view-main');
@@ -107,9 +206,20 @@ document.getElementById('btn-help').addEventListener('click', function() {
   showFeatureDialog('Pusat Bantuan', 'Temukan panduan penggunaan dan FAQ aplikasi SIMARSIP.');
 });
 
+// Navigasi manual: show/hide halaman
 document.getElementById('btn-all-history').addEventListener('click', function() {
-  showFeatureDialog('Riwayat Lengkap', 'Lihat semua riwayat pengajuan surat dan peminjaman.');
+  showHistoryPage();
 });
+
+function showHistoryPage() {
+  document.querySelector('[data-name="home"]').style.display = 'none';
+  document.querySelector('[data-name="history"]').style.display = 'block';
+}
+
+function showHomePage() {
+  document.querySelector('[data-name="history"]').style.display = 'none';
+  document.querySelector('[data-name="home"]').style.display = 'block';
+}
 
 // Fungsi untuk menampilkan dialog form
 function showFormDialog(title, description) {
@@ -332,3 +442,124 @@ app.ptr.create('.page-content', {
     }, 1000);
   }
 });
+
+// HISTORY PAGE FUNCTIONALITY
+function initHistoryPage() {
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  let currentFilter = 'all';
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentFilter = this.dataset.filter;
+      displayHistory(currentFilter);
+    });
+  });
+
+  // Tampilkan history yang difilter
+  displayHistory(currentFilter);
+}
+
+function displayHistory(filter) {
+  const historyList = document.getElementById('history-list');
+  
+  let filteredData = allHistoryData;
+  if (filter !== 'all') {
+    filteredData = allHistoryData.filter(item => item.status === filter);
+  }
+
+  if (filteredData.length === 0) {
+    historyList.innerHTML = `
+      <div class="history-empty">
+        <i class="f7-icons">doc_text</i>
+        <p>Tidak ada riwayat untuk ditampilkan</p>
+      </div>
+    `;
+    return;
+  }
+
+  historyList.innerHTML = filteredData.map(item => {
+    const statusText = getStatusText(item.status);
+    return `
+      <div class="history-item status-${item.status}" onclick="showHistoryDetail(${item.id})">
+        <div class="history-item-header">
+          <div>
+            <div class="history-item-title">${item.title}</div>
+            <div class="history-item-date">${item.date}</div>
+          </div>
+          <span class="history-status-badge ${item.status}">${statusText}</span>
+        </div>
+        <div class="history-item-description">${item.description}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function getStatusText(status) {
+  const statusMap = {
+    'approve': 'Disetujui',
+    'wait': 'Menunggu',
+    'reject': 'Ditolak',
+    'verified': 'Terverifikasi'
+  };
+  return statusMap[status] || status;
+}
+
+function showHistoryDetail(id) {
+  const item = allHistoryData.find(h => h.id === id);
+  if (!item) return;
+
+  const statusText = getStatusText(item.status);
+  const statusClass = 'badge-' + item.status;
+
+  let dokumenHtml = '';
+  if (item.dokumen && item.dokumen.length > 0) {
+    dokumenHtml = `<div class="history-documents"><strong>Dokumen Pendukung:</strong><ul style='margin:8px 0 0 0;padding-left:18px;'>` +
+      item.dokumen.map(doc => `<li><a href="${doc.url}" target="_blank">${doc.name}</a></li>`).join('') +
+      `</ul></div>`;
+  }
+
+  app.dialog.create({
+    title: 'Detail Riwayat',
+    content: `
+      <div class="status-detail">
+        <h3>${item.title}</h3>
+        <p class="detail-date">${item.date}</p>
+        <div class="detail-content">
+          <strong>Keterangan:</strong><br>
+          ${item.description}
+        </div>
+        ${dokumenHtml}
+        <div class="status-badge ${statusClass}">${statusText}</div>
+      </div>
+      <style>
+        .status-detail h3 { margin: 0 0 10px 0; color: #333; }
+        .detail-date { color: #666; margin-bottom: 15px; font-size: 14px; }
+        .detail-content { margin-bottom: 20px; line-height: 1.5; }
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 12px; font-weight: bold; font-size: 12px; }
+        .history-documents { margin-bottom: 16px; }
+        .history-documents ul { margin: 0; padding-left: 18px; }
+        .history-documents li { font-size: 13px; margin-bottom: 4px; }
+        .history-documents a { color: #0d6efd; text-decoration: underline; }
+      </style>
+    `,
+    buttons: [
+      {
+        text: 'Tutup',
+        close: true
+      }
+    ]
+  }).open();
+}
+
+// Initialize history page saat halaman history ditampilkan
+
+// Handler tombol kembali khusus untuk halaman riwayat
+document.getElementById('btn-back-history').addEventListener('click', function(e) {
+  e.preventDefault();
+  showHomePage();
+});
+
+// Inisialisasi halaman history saat pertama kali tampil
+initHistoryPage();

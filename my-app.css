@@ -408,3 +408,151 @@
 .status-card:nth-child(2) { animation-delay: 0.2s; }
 .status-card:nth-child(3) { animation-delay: 0.3s; }
 .status-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* HISTORY PAGE STYLES */
+.history-filter {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 15px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.filter-btn.active {
+  background: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+
+.filter-btn:active {
+  opacity: 0.8;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 10px 20px 10px;
+}
+
+.history-item {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid #0d6efd;
+}
+
+.history-item:active {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.history-item.status-approve {
+  border-left-color: #28a745;
+}
+
+.history-item.status-wait {
+  border-left-color: #ffc107;
+}
+
+.history-item.status-reject {
+  border-left-color: #dc3545;
+}
+
+.history-item.status-verified {
+  border-left-color: #17a2b8;
+}
+
+.history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.history-item-title {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.history-item-date {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.history-item-description {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.history-status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.history-status-badge.approve {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.history-status-badge.wait {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.history-status-badge.reject {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.history-status-badge.verified {
+  background: rgba(23, 162, 184, 0.1);
+  color: #17a2b8;
+}
+
+.history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.history-empty i {
+  font-size: 48px;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.history-empty p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Sembunyikan halaman history secara default - kita akan menampilkannya lewat JS */
+[data-name="history"] {
+  display: none;
+}
