@@ -77,7 +77,7 @@
             <div class="item-inner">
               <div class="item-title item-label">Durasi Peminjaman (Hari) <span class="required-mark">*</span></div>
               <div class="item-input-wrap">
-                <select id="duration" name="duration" title="Durasi Peminjaman" required onchange="updateEquipmentDurationInfo()">
+                <select id="duration" name="duration" title="Durasi Peminjaman" required onchange="updateDurationInfo()">
                   <option value="">Pilih Durasi</option>
                   <option value="1">1 Hari</option>
                   <option value="2">2 Hari</option>
@@ -97,7 +97,7 @@
               <div class="item-title item-label">Tanggal Peminjaman <span class="required-mark">*</span></div>
               <div class="item-input-wrap">
                 <input id="borrowDate" name="borrowDate" type="text" title="Tanggal Peminjaman" placeholder="Pilih dari kalender" readonly>
-                <button type="button" class="btn-open-calendar" onclick="openEquipmentCalendar()">Buka Kalender</button>
+                <button type="button" class="btn-open-calendar" onclick="openCalendarForDateSelection()">Buka Kalender</button>
                 <div id="durationInfo"></div>
               </div>
             </div>
@@ -199,7 +199,10 @@
 
       const borrowDate = document.getElementById('borrowDate').value;
       const duration = parseInt(document.getElementById('duration').value);
-      const returnDate = new Date(window.equipmentDateSelectionState?.selectedDates?.[window.equipmentDateSelectionState.selectedDates.length - 1] || new Date());
+      // Use shared dateSelectionState (set when opening calendar)
+      const selectedDates = window.dateSelectionState?.selectedDates || [];
+      const lastSelected = selectedDates.length ? new Date(selectedDates[selectedDates.length - 1]) : new Date();
+      const returnDate = new Date(lastSelected);
       returnDate.setDate(returnDate.getDate() + 1);
       const returnDateStr = returnDate.toISOString().split('T')[0];
 
@@ -208,7 +211,7 @@
         equipmentName: document.getElementById('equipmentName').value.trim(),
         quantity: parseInt(document.getElementById('quantity').value),
         duration: duration,
-        borrowDate: window.equipmentDateSelectionState?.selectedDates || [],
+        borrowDate: window.dateSelectionState?.selectedDates || [],
         borrowTime: document.getElementById('borrowTime').value,
         returnDate: new Date(returnDateStr),
         notes: document.getElementById('notes').value.trim(),
@@ -236,8 +239,8 @@
       // Reset form
       addEquipmentForm.reset();
       fileInfo.textContent = '';
-      window.equipmentDateSelectionState.selectedDates = [];
-      window.updateEquipmentDurationInfo();
+      if (window.dateSelectionState) window.dateSelectionState.selectedDates = [];
+      window.updateDurationInfo();
 
       alert('Peminjaman peralatan berhasil ditambahkan!');
       
@@ -250,6 +253,6 @@
     });
 
     // Update duration info when form loads
-    window.updateEquipmentDurationInfo();
+    window.updateDurationInfo();
   </script>
 </div>
