@@ -1,5 +1,13 @@
 {
+  "name": "simarsip-app",
+  "version": "1.0.0",
+  "description": "SIMARSIP App - Sistem Manajemen Ruang dan Surat Dispensasi HMIF",
+  "main": "my-app.js",
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1 -o"
+  },
   "dependencies": {
-    "framework7": "^8.3.4"
+    "framework7": "^8.3.4",
+    "http-server": "^14.1.1"
   }
 }

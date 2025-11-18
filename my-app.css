@@ -1,3 +1,5 @@
+/* ======================== START: CSS AWAL ANDA ======================== */
+
 /* Searchbar */
 .searchbar-custom {
   position: relative;
@@ -388,23 +390,339 @@
   }
 }
 
-/* Animation for new items */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+/* ======================== END: CSS AWAL ANDA ======================== */
+
+/* ======================== START: REVISI DAN KODE KALENDER ======================== */
+
+/* Wrapper kalender: center vertikal & horizontal */
+.page-calendar .calendar-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important; /* center vertical */
+  min-height: 80vh !important; /* supaya tidak terlalu ke atas */
+  padding: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* Card utama kalender */
+.page-calendar .calendar-card {
+  background: #fff !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  width: 100% !important;
+  max-width: 380px !important;
+  margin: 0 auto 24px auto !important; /* bottom margin utk spacing legend */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12) !important;
+  box-sizing: border-box !important;
+}
+
+/* Header bulan + tombol navigasi */
+.page-calendar .calendar-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 18px !important;
+  padding: 8px 0 !important;
+  border-bottom: 1px solid #e2e2e2 !important;
+  margin-bottom: 14px !important;
+  background: transparent !important;
+}
+
+/* Tombol panah navigasi */
+.page-calendar .btn-nav {
+  background: #fff !important;
+  border: 1.5px solid #0d6efd !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  font-size: 20px !important;
+  color: #0d6efd !important;
+  min-width: 48px !important;
+  min-height: 46px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 5px rgba(13, 110, 253, 0.25) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.page-calendar .btn-nav:hover {
+  background: #0d6efd !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.45) !important;
+  transform: scale(1.05) !important;
+}
+
+.page-calendar .btn-nav:active {
+  background: #0056b3 !important;
+  transform: scale(0.95) !important;
+}
+
+/* Judul bulan */
+.page-calendar .calendar-header h3 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #222 !important;
+  margin: 0 !important;
+  flex: 1 1 auto !important;
+  text-align: center !important;
+}
+
+/* Grid header hari */
+.page-calendar .day-header {
+  font-size: 13px !important;
+  color: #555 !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  padding: 8px 0 !important;
+}
+
+/* Grid hari dan tanggal */
+.page-calendar .calendar-days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  gap: 8px !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  max-width: 380px !important;
+  box-sizing: border-box !important;
+}
+
+/* Hari/tanggal */
+.page-calendar .day-card {
+  background: #e7f9ed !important;
+  border: 1.5px solid #a2d0a4 !important;
+  border-radius: 8px !important;
+  min-height: 42px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+  box-sizing: border-box !important;
+}
+
+.page-calendar .day-card:hover {
+  background: #c6eacc !important;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Hari kosong */
+.page-calendar .day-card.empty {
+  background: transparent !important;
+  border: none !important;
+  cursor: default !important;
+}
+
+/* Status warna */
+.page-calendar .day-card.status-available {
+  background: #dcfce7 !important;
+  border-color: #86efac !important;
+  color: #166534 !important;
+}
+
+.page-calendar .day-card.status-pending {
+  background: #dbeafe !important;
+  border-color: #93c5fd !important;
+  color: #1e3a8a !important;
+}
+
+.page-calendar .day-card.status-borrowing {
+  background: #fef3c7 !important;
+  border-color: #fcd34d !important;
+  color: #b45309 !important;
+}
+
+.page-calendar .day-card.status-returned {
+  background: #fecaca !important;
+  border-color: #fca5a5 !important;
+  color: #991b1b !important;
+}
+
+/* Legend / keterangan status */
+.page-calendar .legend-box {
+  max-width: 380px !important;
+  width: 100% !important;
+  padding: 12px 16px !important;
+  background: #fafafa !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+  display: flex !important;
+  flex-direction: column !important; /* Change to column direction */
+  align-items: center !important; /* Center items horizontally */
+  font-size: 13px !important;
+  color: #444 !important;
+  margin-bottom: 12px !important;
+  box-sizing: border-box !important;
+}
+
+/* Floating Action Button (FAB) */
+.fab {
+  position: absolute;
+  right: 16px;
+  bottom: 76px; /* Above the toolbar */
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #0d6efd; /* Blue color from example */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+  transition: transform 0.2s ease-in-out;
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab i.f7-icons {
+  font-size: 28px; /* Larger plus icon */
+}
+
+.page-calendar .legend-title {
+  font-weight: bold !important;
+  margin-bottom: 10px !important;
+  text-align: center !important;
+  font-size: 14px !important; /* Make title slightly larger */
+  color: #222 !important; /* Darker color for title */
+}
+
+.page-calendar .legend-items-wrapper {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 20px !important;
+  flex-wrap: wrap !important; /* Allow items to wrap on smaller screens */
+}
+
+.page-calendar .legend-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Kotak warna legend */
+.page-calendar .legend-color {
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Warna sesuai status legend */
+.page-calendar .legend-color.available { background: #c6efce !important; }
+.page-calendar .legend-color.pending   { background: #a0c4ff !important; }
+.page-calendar .legend-color.borrowing { background: #ffeda0 !important; }
+.page-calendar .legend-color.returned  { background: #f9b9b9 !important; }
+
+/* ===== RESPONSIVE BREAKPOINTS UNTUK BERBAGAI PONSEL ===== */
+/* Ultra small phones (≤320px) */
+@media (max-width: 320px) {
+  .page-calendar .calendar-content {
+    min-height: 75vh !important;
+    padding: 4px !important;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .page-calendar .calendar-card {
+    max-width: 300px !important;
+    padding: 6px !important;
+    margin-bottom: 20px !important;
+  }
+  .page-calendar .calendar-days {
+    gap: 4px !important;
+    max-width: 300px !important;
+  }
+  .page-calendar .day-card {
+    min-height: 30px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+    padding: 1px !important;
+  }
+  .page-calendar .calendar-header h3 {
+    font-size: 16px !important;
+  }
+  .page-calendar .btn-nav {
+    font-size: 18px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+  .page-calendar .legend-box {
+    max-width: 300px !important;
+    font-size: 11px !important;
+    gap: 12px !important;
   }
 }
 
-.status-card {
-  animation: fadeInUp 0.4s ease-out;
+/* Small phones (321px - 480px) */
+@media (min-width: 321px) and (max-width: 480px) {
+  .page-calendar .calendar-content {
+    min-height: 75vh !important;
+    padding: 6px !important;
+  }
+  .page-calendar .calendar-card {
+    max-width: 360px !important;
+    padding: 8px !important;
+    margin-bottom: 20px !important;
+  }
+  .page-calendar .calendar-days {
+    gap: 6px !important;
+    max-width: 360px !important;
+  }
+  .page-calendar .day-card {
+    min-height: 36px !important;
+    font-size: 13px !important;
+  }
+  .page-calendar .calendar-header h3 {
+    font-size: 18px !important;
+  }
+  .page-calendar .btn-nav {
+    font-size: 20px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+  .page-calendar .legend-box {
+    max-width: 360px !important;
+    font-size: 12px !important;
+    gap: 14px !important;
+  }
 }
 
-.status-card:nth-child(1) { animation-delay: 0.1s; }
-.status-card:nth-child(2) { animation-delay: 0.2s; }
-.status-card:nth-child(3) { animation-delay: 0.3s; }
-.status-card:nth-child(4) { animation-delay: 0.4s; }
+/* Medium phones (481px - 600px) */
+@media (min-width: 481px) and (max-width: 600px) {
+  .page-calendar .calendar-content {
+    min-height: 80vh !important;
+    padding: 10px !important;
+  }
+  .page-calendar .calendar-card {
+    max-width: 380px !important;
+    padding: 12px !important;
+    margin-bottom: 24px !important;
+  }
+  .page-calendar .calendar-days {
+    gap: 8px !important;
+    max-width: 380px !important;
+  }
+  .page-calendar .day-card {
+    min-height: 42px !important;
+    font-size: 14px !important;
+  }
+  .page-calendar .calendar-header h3 {
+    font-size: 18px !important;
+  }
+  .page-calendar .btn-nav {
+    font-size: 22px !important;
+    min-width: 48px !important;
+    min-height: 46px !important;
+  }
+  .page-calendar .legend-box {
+    max-width: 380px !important;
+    font-size: 13px !important;
+    gap: 16px !important;
+  }
+}

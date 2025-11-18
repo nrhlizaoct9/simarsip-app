@@ -1,0 +1,101 @@
+<div data-name="calendar" class="page page-calendar">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner">
+      <div class="left">
+        <a href="/" class="link back">
+          <i class="f7-icons">chevron_left</i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Kalender Peminjaman</div>
+    </div>
+  </div>
+
+  <div class="page-content calendar-content">
+    <div class="calendar-card">
+      <div class="calendar-header"></div>
+      <div class="calendar-days"></div>
+    </div>
+
+    <div class="legend-box">
+      <div class="legend-title">Status Peminjaman:</div>
+      <div class="legend-items-wrapper">
+        <div class="legend-item">
+          <div class="legend-color available"></div>
+          <span>Tersedia</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color pending"></div>
+          <span>Pending</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color borrowing"></div>
+          <span>Sedang dipinjam</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color returned"></div>
+          <span>Sudah dikembalikan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Add Button -->
+  <a href="/peminjaman/" id="fab-add" class="fab fab-bottom-right fab-add">
+    <i class="f7-icons">plus</i>
+  </a>
+
+  <!-- Popup: Day Details -->
+  <div class="popup" id="popup-day-details">
+    <div class="page">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <div class="left"></div>
+          <div class="title" id="day-details-title">Detail Peminjaman Tanggal</div>
+          <div class="right"><a href="#" class="link popup-close">Tutup</a></div>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="block-title">Peminjaman pada tanggal ini:</div>
+        <div class="list media-list" id="day-bookings-list">
+          <ul>
+            <!-- Booking items akan diisi oleh JS -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include calendar script -->
+  <script src="js/calendar.js"></script>
+  <script>
+    console.log('[pages/calendar.html] calendar.js script loaded.');
+
+    // Redirect FAB add button ke halaman peminjaman
+    const fabAdd = document.getElementById('fab-add');
+    if(fabAdd){
+      fabAdd.addEventListener('click', (e) => {
+        e.preventDefault();
+        if(typeof app !== 'undefined' && app.views && app.views.main){
+          // Framework7 SPA navigate
+          app.views.main.router.navigate('/peminjaman.html');
+        } else {
+          // fallback non-SPA
+          window.location.href = 'peminjaman.html';
+        }
+      });
+    }
+  </script>
+
+  <div class="toolbar toolbar-bottom">
+    <div class="toolbar-inner">
+      <a href="/" class="link">
+        <div class="link-content">
+          <i class="f7-icons">house_fill</i>
+          <span>Beranda</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

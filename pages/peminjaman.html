@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tambah Peminjaman</title>
+  <link rel="stylesheet" href="css/framework7.bundle.min.css">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    .page-content { padding: 16px; }
+    #add-form-error { color: #b91c1c; font-size: 13px; min-height: 18px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+<div data-name="peminjaman" class="page page-peminjaman">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner">
+      <div class="left">
+        <a href="calendar.html" class="link back">
+          <i class="f7-icons">chevron_left</i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Tambah Peminjaman</div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <form id="add-booking-form">
+      <div class="list no-hairlines-md">
+        <ul>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Judul Arsip / Nama Dokumen</div>
+              <div class="item-input-wrap"><input id="archiveTitle" name="archiveTitle" type="text" placeholder="Judul arsip atau nama dokumen" required></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Nomor Arsip / Kode Referensi</div>
+              <div class="item-input-wrap"><input id="archiveNumber" name="archiveNumber" type="text" placeholder="Nomor arsip atau kode referensi" required></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Kategori Arsip</div>
+              <div class="item-input-wrap">
+                <select id="archiveCategory" name="archiveCategory" required>
+                  <option value="">Pilih Kategori</option>
+                  <option value="Surat Masuk">Surat Masuk</option>
+                  <option value="Laporan">Laporan</option>
+                  <option value="Dokumen Penting">Dokumen Penting</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+              </div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Nama Peminjam</div>
+              <div class="item-input-wrap"><input id="borrowerName" name="borrowerName" type="text" placeholder="Nama lengkap peminjam" required></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Departemen / Divisi</div>
+              <div class="item-input-wrap"><input id="borrowerDepartment" name="borrowerDepartment" type="text" placeholder="Departemen atau divisi peminjam" required></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Kontak Peminjam (Opsional)</div>
+              <div class="item-input-wrap"><input id="borrowerContact" name="borrowerContact" type="text" placeholder="Email atau nomor telepon"></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Tanggal Mulai Peminjaman</div>
+              <div class="item-input-wrap"><input id="date" name="date" type="date" required></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Tanggal Kembali / Estimasi Selesai</div>
+              <div class="item-input-wrap"><input id="returnDate" name="returnDate" type="date" required></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Waktu Mulai</div>
+              <div class="item-input-wrap"><input id="startTime" name="startTime" type="time"></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Waktu Selesai</div>
+              <div class="item-input-wrap"><input id="endTime" name="endTime" type="time"></div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Catatan Tambahan (Opsional)</div>
+              <div class="item-input-wrap"><textarea id="notes" name="notes" placeholder="Keterangan khusus"></textarea></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div id="add-form-error"></div>
+
+      <div class="block">
+        <button type="submit" class="button button-fill">Tambah</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/framework7.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+  // Use global mockBookings from app instance
+  // var mockBookings = []; // No longer needed as it's global
+
+  const addBookingForm = document.getElementById('add-booking-form');
+  const addFormError = document.getElementById('add-form-error');
+
+  // Set default tanggal hari ini
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('date').value = today;
+  document.getElementById('returnDate').value = today;
+
+  addBookingForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    addFormError.textContent = '';
+
+    const formData = {
+      archiveTitle: document.getElementById('archiveTitle').value.trim(),
+      archiveNumber: document.getElementById('archiveNumber').value.trim(),
+      archiveCategory: document.getElementById('archiveCategory').value,
+      borrowerName: document.getElementById('borrowerName').value.trim(),
+      borrowerDepartment: document.getElementById('borrowerDepartment').value.trim(),
+      borrowerContact: document.getElementById('borrowerContact').value.trim(),
+      date: new Date(document.getElementById('date').value), // Convert to Date object
+      returnDate: new Date(document.getElementById('returnDate').value), // Convert to Date object
+      startTime: document.getElementById('startTime').value || '00:00',
+      endTime: document.getElementById('endTime').value || '23:59',
+      notes: document.getElementById('notes').value.trim(),
+      status: 'Pending'
+    };
+
+    // Validasi wajib
+    if(!formData.archiveTitle || !formData.archiveNumber || !formData.archiveCategory ||
+       !formData.borrowerName || !formData.borrowerDepartment || !formData.date || !formData.returnDate){
+      addFormError.textContent = 'Semua kolom wajib diisi (kecuali Kontak, Waktu, Catatan).';
+      return;
+    }
+
+    // Simpan ke global mock array
+    if (typeof app !== 'undefined' && app.mockBookings) {
+      app.mockBookings.push(formData);
+    } else {
+      console.error('[peminjaman.html] app.mockBookings not found. Booking not saved.');
+      app.dialog.alert('Gagal menambahkan peminjaman. Data tidak dapat disimpan.', 'Error');
+      return;
+    }
+
+    // Reset form
+    addBookingForm.reset();
+    document.getElementById('date').value = today;
+    document.getElementById('returnDate').value = today;
+
+    app.dialog.alert('Peminjaman berhasil ditambahkan!', 'Sukses', () => {
+      // Navigate back to calendar and reload to show new booking
+      if (app.views && app.views.main && app.views.main.router) {
+        app.views.main.router.navigate('/calendar/', { reloadCurrent: true });
+      } else {
+        window.location.href = 'calendar.html';
+      }
+    });
+  });
+</script>
+</body>
+</html>
