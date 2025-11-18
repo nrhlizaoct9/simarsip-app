@@ -1,23 +1,9 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tambah Peminjaman</title>
-  <link rel="stylesheet" href="css/framework7.bundle.min.css">
-  <link rel="stylesheet" href="css/app.css">
-  <style>
-    .page-content { padding: 16px; }
-    #add-form-error { color: #b91c1c; font-size: 13px; min-height: 18px; margin-bottom: 12px; }
-  </style>
-</head>
-<body>
 <div data-name="peminjaman" class="page page-peminjaman">
   <div class="navbar">
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
       <div class="left">
-        <a href="calendar.html" class="link back">
+        <a href="/" class="link">
           <i class="f7-icons">chevron_left</i>
           <span class="if-not-md">Back</span>
         </a>
@@ -26,82 +12,136 @@
     </div>
   </div>
 
+  <style>
+    .page-content { padding: 16px; }
+    #add-form-error { color: #b91c1c; font-size: 13px; min-height: 18px; margin-bottom: 12px; }
+    
+    /* Styling untuk field required */
+    .item-title .required-mark {
+      color: #dc2626;
+      font-weight: bold;
+      margin-left: 4px;
+    }
+    
+    /* Styling untuk file info */
+    .file-info-text {
+      color: #666;
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+    
+    #fileInfo {
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    /* Styling untuk textarea */
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+  </style>
+
   <div class="page-content">
     <form id="add-booking-form">
       <div class="list no-hairlines-md">
         <ul>
+          <!-- Nama Kegiatan -->
           <li class="item-content item-input">
             <div class="item-inner">
-              <div class="item-title item-label">Judul Arsip / Nama Dokumen</div>
-              <div class="item-input-wrap"><input id="archiveTitle" name="archiveTitle" type="text" placeholder="Judul arsip atau nama dokumen" required></div>
+              <div class="item-title item-label">Nama Kegiatan <span class="required-mark">*</span></div>
+              <div class="item-input-wrap"><input id="eventName" name="eventName" type="text" placeholder="Contoh: Rapat Koordinasi, Workshop" title="Nama Kegiatan" required></div>
             </div>
           </li>
+
+          <!-- Jenis Ruangan -->
           <li class="item-content item-input">
             <div class="item-inner">
-              <div class="item-title item-label">Nomor Arsip / Kode Referensi</div>
-              <div class="item-input-wrap"><input id="archiveNumber" name="archiveNumber" type="text" placeholder="Nomor arsip atau kode referensi" required></div>
-            </div>
-          </li>
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Kategori Arsip</div>
+              <div class="item-title item-label">Jenis Ruangan <span class="required-mark">*</span></div>
               <div class="item-input-wrap">
-                <select id="archiveCategory" name="archiveCategory" required>
-                  <option value="">Pilih Kategori</option>
-                  <option value="Surat Masuk">Surat Masuk</option>
-                  <option value="Laporan">Laporan</option>
-                  <option value="Dokumen Penting">Dokumen Penting</option>
-                  <option value="Lainnya">Lainnya</option>
+                <select id="roomType" name="roomType" title="Jenis Ruangan" required>
+                  <option value="">Pilih Jenis Ruangan</option>
+                  <option value="Lab. Komputer">Lab. Komputer</option>
+                  <option value="Ruang 101">Ruang 101</option>
+                  <option value="Ruang 102">Ruang 102</option>
+                  <option value="Ruang 103">Ruang 103</option>
+                  <option value="Ruang 104">Ruang 104</option>
+                  <option value="Ruang 105">Ruang 105</option>
+                  <option value="Ruang 106">Ruang 106</option>
+                  <option value="Ruang 107">Ruang 107</option>
+                  <option value="Ruang 108">Ruang 108</option>
+                  <option value="Ruang 109">Ruang 109</option>
+                  <option value="Ruang 110">Ruang 110</option>
+                  <option value="Ruang 111">Ruang 111</option>
+                  <option value="Ruang 112">Ruang 112</option>
+                  <option value="GSG">GSG</option>
                 </select>
               </div>
             </div>
           </li>
+
+          <!-- Tanggal Peminjaman -->
           <li class="item-content item-input">
             <div class="item-inner">
-              <div class="item-title item-label">Nama Peminjam</div>
-              <div class="item-input-wrap"><input id="borrowerName" name="borrowerName" type="text" placeholder="Nama lengkap peminjam" required></div>
+              <div class="item-title item-label">Tanggal Peminjaman <span class="required-mark">*</span></div>
+              <div class="item-input-wrap"><input id="borrowDate" name="borrowDate" type="date" title="Tanggal Peminjaman" required></div>
             </div>
           </li>
+
+          <!-- Durasi Peminjaman (Berapa Hari) -->
           <li class="item-content item-input">
             <div class="item-inner">
-              <div class="item-title item-label">Departemen / Divisi</div>
-              <div class="item-input-wrap"><input id="borrowerDepartment" name="borrowerDepartment" type="text" placeholder="Departemen atau divisi peminjam" required></div>
+              <div class="item-title item-label">Durasi Peminjaman (Hari) <span class="required-mark">*</span></div>
+              <div class="item-input-wrap">
+                <select id="duration" name="duration" title="Durasi Peminjaman" required>
+                  <option value="">Pilih Durasi</option>
+                  <option value="1">1 Hari</option>
+                  <option value="2">2 Hari</option>
+                  <option value="3">3 Hari</option>
+                  <option value="5">5 Hari</option>
+                  <option value="7">1 Minggu</option>
+                  <option value="14">2 Minggu</option>
+                  <option value="30">1 Bulan</option>
+                </select>
+              </div>
             </div>
           </li>
+
+          <!-- Jam Mulai Acara -->
           <li class="item-content item-input">
             <div class="item-inner">
-              <div class="item-title item-label">Kontak Peminjam (Opsional)</div>
-              <div class="item-input-wrap"><input id="borrowerContact" name="borrowerContact" type="text" placeholder="Email atau nomor telepon"></div>
+              <div class="item-title item-label">Jam Mulai Acara <span class="required-mark">*</span></div>
+              <div class="item-input-wrap"><input id="startTime" name="startTime" type="time" title="Jam Mulai Acara" placeholder="HH:MM" required></div>
             </div>
           </li>
+
+          <!-- Jam Selesai Acara -->
           <li class="item-content item-input">
             <div class="item-inner">
-              <div class="item-title item-label">Tanggal Mulai Peminjaman</div>
-              <div class="item-input-wrap"><input id="date" name="date" type="date" required></div>
+              <div class="item-title item-label">Jam Selesai Acara <span class="required-mark">*</span></div>
+              <div class="item-input-wrap"><input id="endTime" name="endTime" type="time" title="Jam Selesai Acara" placeholder="HH:MM" required></div>
             </div>
           </li>
+
+          <!-- Catatan (Opsional) -->
           <li class="item-content item-input">
             <div class="item-inner">
-              <div class="item-title item-label">Tanggal Kembali / Estimasi Selesai</div>
-              <div class="item-input-wrap"><input id="returnDate" name="returnDate" type="date" required></div>
+              <div class="item-title item-label">Catatan (Opsional)</div>
+              <div class="item-input-wrap"><textarea id="notes" name="notes" title="Catatan" placeholder="Keterangan atau kebutuhan khusus..."></textarea></div>
             </div>
           </li>
+
+          <!-- Upload Surat -->
           <li class="item-content item-input">
             <div class="item-inner">
-              <div class="item-title item-label">Waktu Mulai</div>
-              <div class="item-input-wrap"><input id="startTime" name="startTime" type="time"></div>
-            </div>
-          </li>
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Waktu Selesai</div>
-              <div class="item-input-wrap"><input id="endTime" name="endTime" type="time"></div>
-            </div>
-          </li>
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Catatan Tambahan (Opsional)</div>
-              <div class="item-input-wrap"><textarea id="notes" name="notes" placeholder="Keterangan khusus"></textarea></div>
+              <div class="item-title item-label">Unggah Softfile Surat <span class="required-mark">*</span></div>
+              <div class="item-input-wrap">
+                <input id="letterFile" name="letterFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" title="Unggah Softfile Surat" required>
+                <small class="file-info-text">Format: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</small>
+                <div id="fileInfo"></div>
+              </div>
             </div>
           </li>
         </ul>
@@ -119,40 +159,68 @@
 <script src="js/framework7.bundle.min.js"></script>
 <script src="js/app.js"></script>
 <script>
-  // Use global mockBookings from app instance
-  // var mockBookings = []; // No longer needed as it's global
-
   const addBookingForm = document.getElementById('add-booking-form');
   const addFormError = document.getElementById('add-form-error');
+  const fileInput = document.getElementById('letterFile');
+  const fileInfo = document.getElementById('fileInfo');
 
   // Set default tanggal hari ini
   const today = new Date().toISOString().split('T')[0];
-  document.getElementById('date').value = today;
-  document.getElementById('returnDate').value = today;
+  document.getElementById('borrowDate').value = today;
 
+  // Event listener untuk file upload
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validasi ukuran file (max 5MB)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        fileInfo.textContent = '❌ File terlalu besar (Max 5MB)';
+        fileInfo.style.color = '#b91c1c';
+        fileInput.value = '';
+        return;
+      }
+      fileInfo.textContent = '✓ ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
+      fileInfo.style.color = '#16a34a';
+    } else {
+      fileInfo.textContent = '';
+    }
+  });
+
+  // Event listener form submit
   addBookingForm.addEventListener('submit', (e) => {
     e.preventDefault();
     addFormError.textContent = '';
 
+    const borrowDate = document.getElementById('borrowDate').value;
+    const duration = parseInt(document.getElementById('duration').value);
+    const returnDate = new Date(borrowDate);
+    returnDate.setDate(returnDate.getDate() + duration);
+    const returnDateStr = returnDate.toISOString().split('T')[0];
+
     const formData = {
-      archiveTitle: document.getElementById('archiveTitle').value.trim(),
-      archiveNumber: document.getElementById('archiveNumber').value.trim(),
-      archiveCategory: document.getElementById('archiveCategory').value,
-      borrowerName: document.getElementById('borrowerName').value.trim(),
-      borrowerDepartment: document.getElementById('borrowerDepartment').value.trim(),
-      borrowerContact: document.getElementById('borrowerContact').value.trim(),
-      date: new Date(document.getElementById('date').value), // Convert to Date object
-      returnDate: new Date(document.getElementById('returnDate').value), // Convert to Date object
-      startTime: document.getElementById('startTime').value || '00:00',
-      endTime: document.getElementById('endTime').value || '23:59',
+      eventName: document.getElementById('eventName').value.trim(),
+      roomType: document.getElementById('roomType').value,
+      borrowDate: new Date(borrowDate),
+      duration: duration,
+      returnDate: new Date(returnDateStr),
+      startTime: document.getElementById('startTime').value,
+      endTime: document.getElementById('endTime').value,
       notes: document.getElementById('notes').value.trim(),
+      letterFile: fileInput.files[0]?.name || '',
       status: 'Pending'
     };
 
     // Validasi wajib
-    if(!formData.archiveTitle || !formData.archiveNumber || !formData.archiveCategory ||
-       !formData.borrowerName || !formData.borrowerDepartment || !formData.date || !formData.returnDate){
-      addFormError.textContent = 'Semua kolom wajib diisi (kecuali Kontak, Waktu, Catatan).';
+    if (!formData.eventName || !formData.roomType || !borrowDate || !duration ||
+        !formData.startTime || !formData.endTime || !fileInput.files[0]) {
+      addFormError.textContent = 'Semua kolom wajib diisi kecuali Catatan.';
+      return;
+    }
+
+    // Validasi jam
+    if (formData.startTime >= formData.endTime) {
+      addFormError.textContent = 'Jam selesai harus lebih besar dari jam mulai.';
       return;
     }
 
@@ -167,11 +235,12 @@
 
     // Reset form
     addBookingForm.reset();
-    document.getElementById('date').value = today;
-    document.getElementById('returnDate').value = today;
+    document.getElementById('borrowDate').value = today;
+    fileInfo.textContent = '';
 
-    app.dialog.alert('Peminjaman berhasil ditambahkan!', 'Sukses', () => {
-      // Navigate back to calendar and reload to show new booking
+
+    app.dialog.alert('Peminjaman ruangan berhasil ditambahkan!', 'Sukses', () => {
+      // Navigate back to calendar
       if (app.views && app.views.main && app.views.main.router) {
         app.views.main.router.navigate('/calendar/', { reloadCurrent: true });
       } else {
@@ -180,5 +249,4 @@
     });
   });
 </script>
-</body>
-</html>
+</div>

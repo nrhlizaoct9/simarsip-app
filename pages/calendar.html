@@ -3,7 +3,7 @@
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
       <div class="left">
-        <a href="/" class="link back">
+        <a href="/" class="link">
           <i class="f7-icons">chevron_left</i>
           <span class="if-not-md">Back</span>
         </a>
@@ -79,7 +79,7 @@
         e.preventDefault();
         if(typeof app !== 'undefined' && app.views && app.views.main){
           // Framework7 SPA navigate
-          app.views.main.router.navigate('/peminjaman.html');
+          app.views.main.router.navigate('/peminjaman/');
         } else {
           // fallback non-SPA
           window.location.href = 'peminjaman.html';

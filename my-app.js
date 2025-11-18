@@ -3,36 +3,7 @@ var app = new Framework7({
   el: '#app',
   name: 'SIMARSIP App',
   theme: 'auto',
-  routes: [
-    {
-      path: '/history/',
-      name: 'history'
-    },
-    {
-      path: '/form-ruangan/',
-      component: `
-        <div class="page">
-          <div class="navbar">
-            <div class="navbar-bg"></div>
-            <div class="navbar-inner">
-              <div class="left">
-                <a href="#" class="link back">
-                  <i class="icon icon-back"></i>
-                  <span class="if-not-md">Back</span>
-                </a>
-              </div>
-              <div class="title">Peminjaman Ruangan</div>
-            </div>
-          </div>
-          <div class="page-content">
-            <div class="block">
-              <p>Form peminjaman ruangan akan ditampilkan di sini.</p>
-            </div>
-          </div>
-        </div>
-      `
-    }
-  ],
+  routes: routes,  // Use routes from js/routes.js
   // Framework7 parameters
   touch: {
     tapHold: true
@@ -174,20 +145,36 @@ app.on('pageAfterIn', function (page) {
 });
 
 // Event handlers for menu cards (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-document.getElementById('btn-room').addEventListener('click', function() {
-  showFormDialog('Peminjaman Ruangan', 
-    'Form untuk meminjam ruangan seperti Lab Komputer, Ruang Rapat, atau Aula.');
-});
+var btnRoom = document.getElementById('btn-room');
+if (btnRoom) {
+  btnRoom.addEventListener('click', function() {
+    // Navigate ke halaman peminjaman ruangan
+    console.log('[my-app.js] btn-room clicked');
+    if(typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router){
+      console.log('[my-app.js] Navigating to /peminjaman/');
+      app.views.main.router.navigate('/peminjaman/');
+    } else {
+      console.log('[my-app.js] Fallback to direct href');
+      window.location.href = 'pages/peminjaman.html';
+    }
+  });
+}
 
-document.getElementById('btn-dispen').addEventListener('click', function() {
-  showFormDialog('Surat Dispensasi', 
-    'Form untuk mengajukan surat dispensasi karena sakit, acara kampus, atau keperluan lainnya.');
-});
+var btnDispen = document.getElementById('btn-dispen');
+if (btnDispen) {
+  btnDispen.addEventListener('click', function() {
+    showFormDialog('Surat Dispensasi', 
+      'Form untuk mengajukan surat dispensasi karena sakit, acara kampus, atau keperluan lainnya.');
+  });
+}
 
-document.getElementById('btn-item').addEventListener('click', function() {
-  showFormDialog('Peminjaman Peralatan', 
-    'Form untuk meminjam peralatan seperti proyektor, sound system, atau kamera.');
-});
+var btnItem = document.getElementById('btn-item');
+if (btnItem) {
+  btnItem.addEventListener('click', function() {
+    showFormDialog('Peminjaman Peralatan', 
+      'Form untuk meminjam peralatan seperti proyektor, sound system, atau kamera.');
+  });
+}
 
 // Event handlers untuk status pengajuan (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
 document.getElementById('status-1').addEventListener('click', function() {
@@ -227,17 +214,29 @@ document.getElementById('status-4').addEventListener('click', function() {
 });
 
 // Event handlers untuk footer navigation (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-document.getElementById('btn-calendar').addEventListener('click', function() {
-  showFeatureDialog('Kalender', 'Lihat jadwal peminjaman ruangan dan barang dalam bentuk kalender.');
-});
+var btnCalendar = document.getElementById('btn-calendar');
+if (btnCalendar) {
+  btnCalendar.addEventListener('click', function(e) {
+    e.preventDefault();
+    if(app && app.views && app.views.main && app.views.main.router){
+      app.views.main.router.navigate('/calendar/');
+    }
+  });
+}
 
-document.getElementById('btn-notification').addEventListener('click', function() {
-  showNotifications();
-});
+var btnNotification = document.getElementById('btn-notification');
+if (btnNotification) {
+  btnNotification.addEventListener('click', function() {
+    showNotifications();
+  });
+}
 
-document.getElementById('btn-help').addEventListener('click', function() {
-  showFeatureDialog('Pusat Bantuan', 'Temukan panduan penggunaan dan FAQ aplikasi SIMARSIP.');
-});
+var btnHelp = document.getElementById('btn-help');
+if (btnHelp) {
+  btnHelp.addEventListener('click', function() {
+    showFeatureDialog('Pusat Bantuan', 'Temukan panduan penggunaan dan FAQ aplikasi SIMARSIP.');
+  });
+}
 
 // Navigasi manual: show/hide halaman (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
 document.getElementById('btn-all-history').addEventListener('click', function() {
