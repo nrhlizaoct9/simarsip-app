@@ -13,6 +13,10 @@ var routes = [
     url: '/pages/peminjaman.html'
   },
   {
+    path: '/peralatan/',
+    url: '/pages/peralatan.html'
+  },
+  {
     path: '/profile/',
     url: '/pages/profile.html'
   }
