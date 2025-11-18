@@ -563,3 +563,74 @@ document.getElementById('btn-back-history').addEventListener('click', function(e
 
 // Inisialisasi halaman history saat pertama kali tampil (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
 // initHistoryPage(); // This will be called when showHistoryPage is invoked
+
+// ===== GLOBAL STATE FOR MULTI-DATE SELECTION =====
+window.dateSelectionState = {
+  requiredDays: 0,
+  selectedDates: [],
+  isSelectingMode: false
+};
+
+// ===== GLOBAL FUNCTIONS FOR DATE SELECTION =====
+window.updateDurationInfo = function() {
+  const duration = document.getElementById('duration') ? document.getElementById('duration').value : '';
+  const durationInfo = document.getElementById('durationInfo');
+  const selectedDates = window.dateSelectionState.selectedDates || [];
+  
+  if (!duration || !durationInfo) return;
+
+  durationInfo.style.display = 'block';
+  let remainingDays = parseInt(duration) - selectedDates.length;
+  
+  if (remainingDays > 0) {
+    durationInfo.textContent = `Pilih ${remainingDays} tanggal lagi di kalender`;
+  } else if (remainingDays === 0) {
+    durationInfo.textContent = 'Semua tanggal sudah dipilih ✓';
+  } else {
+    durationInfo.textContent = `${Math.abs(remainingDays)} tanggal berlebih (hapus ${Math.abs(remainingDays)})`;
+  }
+};
+
+window.openCalendarForDateSelection = function() {
+  const duration = document.getElementById('duration') ? document.getElementById('duration').value : '';
+  if (!duration) {
+    if (typeof app !== 'undefined' && app.dialog) {
+      app.dialog.alert('Pilih durasi peminjaman terlebih dahulu', 'Info');
+    } else {
+      alert('Pilih durasi peminjaman terlebih dahulu');
+    }
+    return;
+  }
+
+  window.dateSelectionState.requiredDays = parseInt(duration);
+  window.dateSelectionState.selectedDates = [];
+  window.dateSelectionState.isSelectingMode = true;
+
+  console.log('[openCalendarForDateSelection] Mode selection activated:', window.dateSelectionState);
+
+  // Navigate to calendar dengan mode selection
+  setTimeout(() => {
+    if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
+      console.log('[openCalendarForDateSelection] Using Framework7 router');
+      app.views.main.router.navigate('/calendar/');
+    } else {
+      console.log('[openCalendarForDateSelection] Using fallback navigation');
+      window.location.href = '/calendar.html';
+    }
+  }, 100);
+};
+
+window.confirmDateSelection = function(dates) {
+  const borrowDateInput = document.getElementById('borrowDate');
+  if (!borrowDateInput || !dates || dates.length === 0) return;
+
+  // Format dates as display text
+  const dateTexts = dates.map(d => {
+    const date = new Date(d);
+    return date.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+  });
+  
+  borrowDateInput.value = dateTexts.join(', ');
+  window.dateSelectionState.selectedDates = dates;
+  window.updateDurationInfo();
+};
