@@ -171,8 +171,13 @@ if (btnDispen) {
 var btnItem = document.getElementById('btn-item');
 if (btnItem) {
   btnItem.addEventListener('click', function() {
-    showFormDialog('Peminjaman Peralatan', 
-      'Form untuk meminjam peralatan seperti proyektor, sound system, atau kamera.');
+    // Navigate to equipment rental page instead of opening the old modal
+    console.log('[my-app.js] btn-item clicked - navigate to /peralatan/');
+    if(typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router){
+      app.views.main.router.navigate('/peralatan/');
+    } else {
+      window.location.href = 'pages/peralatan.html';
+    }
   });
 }
 
