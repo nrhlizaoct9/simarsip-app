@@ -77,6 +77,13 @@
   <script src="js/calendar.js"></script>
   <script>
     console.log('[pages/calendar.html] calendar.js script loaded.');
+    console.log('[pages/calendar.html] dateSelectionState:', window.dateSelectionState);
+
+    // Initialize calendar
+    if (typeof initializeCalendar === 'function') {
+      console.log('[pages/calendar.html] Calling initializeCalendar()');
+      initializeCalendar();
+    }
 
     // Redirect FAB add button ke halaman peminjaman
     const fabAdd = document.getElementById('fab-add');

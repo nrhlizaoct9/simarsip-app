@@ -286,7 +286,11 @@
   window.openCalendarForDateSelection = function() {
     const duration = document.getElementById('duration').value;
     if (!duration) {
-      app.dialog.alert('Pilih durasi peminjaman terlebih dahulu', 'Info');
+      if (typeof app !== 'undefined' && app.dialog) {
+        app.dialog.alert('Pilih durasi peminjaman terlebih dahulu', 'Info');
+      } else {
+        alert('Pilih durasi peminjaman terlebih dahulu');
+      }
       return;
     }
 
@@ -294,12 +298,18 @@
     window.dateSelectionState.selectedDates = [];
     window.dateSelectionState.isSelectingMode = true;
 
+    console.log('[openCalendarForDateSelection] Mode selection activated:', window.dateSelectionState);
+
     // Navigate to calendar dengan mode selection
-    if (app.views && app.views.main && app.views.main.router) {
-      app.views.main.router.navigate('/calendar/');
-    } else {
-      window.location.href = 'calendar.html';
-    }
+    setTimeout(() => {
+      if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
+        console.log('[openCalendarForDateSelection] Using Framework7 router');
+        app.views.main.router.navigate('/calendar/');
+      } else {
+        console.log('[openCalendarForDateSelection] Using fallback navigation');
+        window.location.href = '/calendar.html';
+      }
+    }, 100);
   };
 
   window.confirmDateSelection = function(dates) {

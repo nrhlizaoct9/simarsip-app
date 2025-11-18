@@ -229,8 +229,13 @@ function initializeCalendar() {
         confirmButton.className = 'btn-confirm-dates';
         confirmButton.textContent = 'Konfirmasi Tanggal';
         confirmButton.addEventListener('click', () => {
+          console.log('[btn-confirm-dates] clicked', window.dateSelectionState);
           if (window.dateSelectionState.selectedDates.length !== window.dateSelectionState.requiredDays) {
-            app.dialog.alert(`Pilih ${window.dateSelectionState.requiredDays} tanggal`, 'Belum Lengkap');
+            if (typeof app !== 'undefined' && app.dialog) {
+              app.dialog.alert(`Pilih ${window.dateSelectionState.requiredDays} tanggal`, 'Belum Lengkap');
+            } else {
+              alert(`Pilih ${window.dateSelectionState.requiredDays} tanggal`);
+            }
             return;
           }
           
@@ -238,23 +243,24 @@ function initializeCalendar() {
           
           // Call confirmation function in peminjaman.html
           if (typeof window.confirmDateSelection === 'function') {
+            console.log('[btn-confirm-dates] Calling confirmDateSelection with:', window.dateSelectionState.selectedDates);
             window.confirmDateSelection(window.dateSelectionState.selectedDates);
             
             // Navigate back to peminjaman form
-            if (app.views && app.views.main && app.views.main.router) {
+            if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
               app.views.main.router.navigate('/peminjaman/');
             } else {
-              window.location.href = 'peminjaman.html';
+              window.location.href = '/peminjaman.html';
             }
           }
         });
         
-        const buttonsContainer = document.querySelector('.calendar-buttons') || document.createElement('div');
-        buttonsContainer.className = 'calendar-buttons';
-        buttonsContainer.appendChild(confirmButton);
-        
-        if (!document.querySelector('.calendar-buttons')) {
-          pageContent.appendChild(buttonsContainer);
+        // Insert button after legend or at end of page-content
+        const legendBox = pageContent.querySelector('.legend-box');
+        if (legendBox && legendBox.nextSibling) {
+          pageContent.insertBefore(confirmButton, legendBox.nextSibling);
+        } else {
+          pageContent.appendChild(confirmButton);
         }
       }
     }
