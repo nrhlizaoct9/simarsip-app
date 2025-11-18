@@ -119,6 +119,32 @@
   color: #333;
 }
 
+/* ===== PEMINJAMAN PAGE STYLING ===== */
+.page-peminjaman .btn-open-calendar {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.page-peminjaman .btn-open-calendar:active {
+  background: #0051D5;
+}
+
+.page-peminjaman #durationInfo {
+  font-size: 12px;
+  color: #666;
+  margin-top: 6px;
+}
+
 .status-card small {
   color: #666;
   font-size: 12px;
@@ -543,6 +569,50 @@
   color: #991b1b !important;
 }
 
+/* Date range selection styling */
+.page-calendar .day-card.date-range-start {
+  background: #7c3aed !important;
+  border-color: #6d28d9 !important;
+  color: white !important;
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.5) !important;
+}
+
+.page-calendar .day-card.date-range-selected {
+  background: #c4b5fd !important;
+  border-color: #a78bfa !important;
+  color: #5b21b6 !important;
+  position: relative;
+}
+
+/* Multi-date selection styling */
+.page-calendar .day-card.date-selected-multiday {
+  background: #7c3aed !important;
+  border-color: #6d28d9 !important;
+  color: white !important;
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.5) !important;
+}
+
+.page-calendar .btn-confirm-dates {
+  display: block;
+  width: 100%;
+  margin: 16px 0;
+  padding: 12px;
+  background: #10B981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.page-calendar .btn-confirm-dates:active {
+  background: #059669;
+}
+
 /* Legend / keterangan status */
 .page-calendar .legend-box {
   max-width: 380px !important;
@@ -592,7 +662,22 @@
   margin-bottom: 10px !important;
   text-align: center !important;
   font-size: 14px !important; /* Make title slightly larger */
-  color: #222 !important; /* Darker color for title */
+}
+
+.page-calendar .calendar-tips {
+  margin: 12px 0 !important;
+  padding: 12px !important;
+  background: #F3F4F6 !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  color: #374151 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.page-calendar .calendar-tips p {
+  margin: 0 !important;
 }
 
 .page-calendar .legend-items-wrapper {
@@ -621,6 +706,7 @@
 .page-calendar .legend-color.pending   { background: #a0c4ff !important; }
 .page-calendar .legend-color.borrowing { background: #ffeda0 !important; }
 .page-calendar .legend-color.returned  { background: #f9b9b9 !important; }
+.page-calendar .legend-color.selected  { background: #7c3aed !important; }
 
 /* ===== RESPONSIVE BREAKPOINTS UNTUK BERBAGAI PONSEL ===== */
 /* Ultra small phones (≤320px) */

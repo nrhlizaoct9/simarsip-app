@@ -82,20 +82,12 @@
             </div>
           </li>
 
-          <!-- Tanggal Peminjaman -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Tanggal Peminjaman <span class="required-mark">*</span></div>
-              <div class="item-input-wrap"><input id="borrowDate" name="borrowDate" type="date" title="Tanggal Peminjaman" required></div>
-            </div>
-          </li>
-
           <!-- Durasi Peminjaman (Berapa Hari) -->
           <li class="item-content item-input">
             <div class="item-inner">
               <div class="item-title item-label">Durasi Peminjaman (Hari) <span class="required-mark">*</span></div>
               <div class="item-input-wrap">
-                <select id="duration" name="duration" title="Durasi Peminjaman" required>
+                <select id="duration" name="duration" title="Durasi Peminjaman" required onchange="updateDurationInfo()">
                   <option value="">Pilih Durasi</option>
                   <option value="1">1 Hari</option>
                   <option value="2">2 Hari</option>
@@ -105,6 +97,18 @@
                   <option value="14">2 Minggu</option>
                   <option value="30">1 Bulan</option>
                 </select>
+              </div>
+            </div>
+          </li>
+
+          <!-- Tanggal Peminjaman -->
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Tanggal Peminjaman <span class="required-mark">*</span></div>
+              <div class="item-input-wrap">
+                <input id="borrowDate" name="borrowDate" type="text" title="Tanggal Peminjaman" placeholder="Pilih dari kalender" readonly>
+                <button type="button" class="btn-open-calendar" onclick="openCalendarForDateSelection()">Buka Kalender</button>
+                <div id="durationInfo"></div>
               </div>
             </div>
           </li>
@@ -248,5 +252,68 @@
       }
     });
   });
+
+  // ===== GLOBAL STATE FOR MULTI-DATE SELECTION =====
+  window.dateSelectionState = {
+    requiredDays: 0,
+    selectedDates: [],
+    isSelectingMode: false
+  };
+
+  window.updateDurationInfo = function() {
+    const duration = document.getElementById('duration').value;
+    const durationInfo = document.getElementById('durationInfo');
+    const selectedDates = window.dateSelectionState.selectedDates;
+    
+    if (!duration) {
+      durationInfo.textContent = '';
+      durationInfo.style.display = 'none';
+      return;
+    }
+
+    durationInfo.style.display = 'block';
+    let remainingDays = parseInt(duration) - selectedDates.length;
+    
+    if (remainingDays > 0) {
+      durationInfo.textContent = `Pilih ${remainingDays} tanggal lagi di kalender`;
+    } else if (remainingDays === 0) {
+      durationInfo.textContent = 'Semua tanggal sudah dipilih ✓';
+    } else {
+      durationInfo.textContent = `${Math.abs(remainingDays)} tanggal berlebih (hapus ${Math.abs(remainingDays)})`;
+    }
+  };
+
+  window.openCalendarForDateSelection = function() {
+    const duration = document.getElementById('duration').value;
+    if (!duration) {
+      app.dialog.alert('Pilih durasi peminjaman terlebih dahulu', 'Info');
+      return;
+    }
+
+    window.dateSelectionState.requiredDays = parseInt(duration);
+    window.dateSelectionState.selectedDates = [];
+    window.dateSelectionState.isSelectingMode = true;
+
+    // Navigate to calendar dengan mode selection
+    if (app.views && app.views.main && app.views.main.router) {
+      app.views.main.router.navigate('/calendar/');
+    } else {
+      window.location.href = 'calendar.html';
+    }
+  };
+
+  window.confirmDateSelection = function(dates) {
+    if (dates && dates.length > 0) {
+      // Format dates as display text
+      const dateTexts = dates.map(d => {
+        const date = new Date(d);
+        return date.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+      });
+      
+      document.getElementById('borrowDate').value = dateTexts.join(', ');
+      window.dateSelectionState.selectedDates = dates;
+      window.updateDurationInfo();
+    }
+  };
 </script>
 </div>
