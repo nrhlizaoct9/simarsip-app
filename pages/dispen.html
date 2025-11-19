@@ -1,0 +1,142 @@
+<div data-name="dispen" class="page page-dispen">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner">
+      <div class="left">
+        <a href="/" class="link">
+          <i class="f7-icons">chevron_left</i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Surat Dispensasi</div>
+    </div>
+  </div>
+
+  <style>
+    .page-content { padding: 16px; }
+    .file-info-text { color: #666; display: block; margin-top: 5px; font-size: 12px; }
+    textarea { resize: vertical; min-height: 80px; }
+    .required-mark { color: #dc2626; }
+  </style>
+
+  <div class="page-content">
+    <form id="dispen-form">
+      <div class="list no-hairlines-md">
+        <ul>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Nama Kegiatan <span class="required-mark">*</span></div>
+              <div class="item-input-wrap"><input id="dispenEventName" name="dispenEventName" type="text" placeholder="Contoh: Mengikuti Lomba, Izin Sakit" required></div>
+            </div>
+          </li>
+
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Mata Kuliah <span class="required-mark">*</span></div>
+              <div class="item-input-wrap"><input id="dispenCourse" name="dispenCourse" type="text" placeholder="Contoh: Pemrograman Web" required></div>
+            </div>
+          </li>
+
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Nama Dosen <span class="required-mark">*</span></div>
+              <div class="item-input-wrap"><input id="dispenLecturer" name="dispenLecturer" type="text" placeholder="Contoh: Dr. Ahmad Wijaya" required></div>
+            </div>
+          </li>
+
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Tanggal <span class="required-mark">*</span></div>
+              <div class="item-input-wrap">
+                <input id="date" name="date" type="text" placeholder="Pilih tanggal" readonly>
+                <button type="button" class="btn-open-calendar" onclick="openCalendarForSingleDate('#date','dispen')">Buka Kalender</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Catatan (Opsional)</div>
+              <div class="item-input-wrap"><textarea id="dispenNotes" name="dispenNotes" placeholder="Keterangan tambahan (opsional)"></textarea></div>
+            </div>
+          </li>
+
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Unggah Surat Dispensasi <span class="required-mark">*</span></div>
+              <div class="item-input-wrap">
+                <input id="dispenFile" name="dispenFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                <small class="file-info-text">Format: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</small>
+                <div id="dispenFileInfo"></div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div id="dispen-form-error" style="color:#b91c1c; margin-bottom:12px; min-height:18px;"></div>
+
+      <div class="block">
+        <button type="submit" class="button button-fill">Kirim Pengajuan</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const dispenForm = document.getElementById('dispen-form');
+    const dispenFile = document.getElementById('dispenFile');
+    const dispenFileInfo = document.getElementById('dispenFileInfo');
+    const dispenError = document.getElementById('dispen-form-error');
+    const today = new Date().toISOString().split('T')[0];
+
+    // optional: set default date display to today
+    // document.getElementById('date').value = today;
+
+    dispenFile.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if (!f) { dispenFileInfo.textContent = ''; return; }
+      const maxSize = 5 * 1024 * 1024;
+      if (f.size > maxSize) { dispenFileInfo.textContent = '✗ File terlalu besar (Max 5MB)'; dispenFileInfo.style.color='#dc2626'; dispenFile.value=''; return; }
+      dispenFileInfo.textContent = '✓ ' + f.name + ' (' + (f.size/1024).toFixed(2) + ' KB)'; dispenFileInfo.style.color='#16a34a';
+    });
+
+    dispenForm.addEventListener('submit', (e)=>{
+      e.preventDefault(); dispenError.textContent = '';
+      const name = document.getElementById('dispenEventName').value.trim();
+      const course = document.getElementById('dispenCourse').value.trim();
+      const lecturer = document.getElementById('dispenLecturer').value.trim();
+      const dateEl = document.getElementById('date');
+      // prefer iso stored by calendar
+      const dateIso = dateEl && dateEl.dataset && dateEl.dataset.iso ? dateEl.dataset.iso.split(',')[0] : (dateEl.value || '');
+      const notes = document.getElementById('dispenNotes').value.trim();
+      if (!name || !course || !lecturer || !dateIso || !dispenFile.files[0]) {
+        dispenError.textContent = 'Semua kolom bertanda * wajib diisi.'; return;
+      }
+
+      const record = {
+        type: 'Dispensasi',
+        eventName: name,
+        course: course,
+        lecturer: lecturer,
+        date: new Date(dateIso),
+        notes: notes,
+        file: dispenFile.files[0].name || '',
+        status: 'Pending'
+      };
+
+      if (typeof app !== 'undefined' && app.mockBookings) {
+        app.mockBookings.push(record);
+      }
+
+      dispenForm.reset(); dispenFileInfo.textContent = '';
+      if (typeof app !== 'undefined' && app.dialog) {
+        app.dialog.alert('Pengajuan dispensasi berhasil dikirim!', 'Sukses', ()=>{
+          if (app.views && app.views.main && app.views.main.router) app.views.main.router.navigate('/');
+        });
+      } else {
+        alert('Pengajuan dispensasi berhasil dikirim!');
+        window.location.href = '/';
+      }
+    });
+  </script>
+</div>

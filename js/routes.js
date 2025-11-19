@@ -17,6 +17,10 @@ var routes = [
     url: '/pages/peralatan.html'
   },
   {
+    path: '/dispen/',
+    url: '/pages/dispen.html'
+  },
+  {
     path: '/profile/',
     url: '/pages/profile.html'
   }

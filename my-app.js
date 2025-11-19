@@ -171,7 +171,10 @@ app.on('pageAfterIn', function(page) {
     try { window.hideLoading(); } catch (e) {}
     // If there are pending selectedDates from the calendar, try to apply them to this page
     try {
-      if (window.dateSelectionState && Array.isArray(window.dateSelectionState.selectedDates) && window.dateSelectionState.selectedDates.length > 0) {
+      // Also consider values persisted in localStorage as a fallback
+      let pendingDates = (window.dateSelectionState && Array.isArray(window.dateSelectionState.selectedDates) && window.dateSelectionState.selectedDates.length > 0) ? window.dateSelectionState.selectedDates : null;
+      try { const ls = localStorage.getItem('simarsip.lastSelectedIso'); if (!pendingDates && ls) { pendingDates = ls.split(','); } } catch(e) {}
+      if (pendingDates && pendingDates.length > 0) {
         // If sourcePage matches this page, or if no sourcePage set but a targetSelector matches inside this page
         const src = window.dateSelectionState.sourcePage;
         const targetSel = window.dateSelectionState.targetSelector;
@@ -184,8 +187,8 @@ app.on('pageAfterIn', function(page) {
           // write into the first matching element inside this page
           const el = (page.el.querySelector && (page.el.querySelector(targetSel) || page.el.querySelector('#borrowDate') || page.el.querySelector('#date') || page.el.querySelector('input[name="date"]')));
           if (el) {
-            // format display and ISO
-            const dates = window.dateSelectionState.selectedDates;
+              // format display and ISO
+              const dates = pendingDates;
             const dateTexts = dates.map(d => {
               const date = new Date(d);
               return date.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
@@ -230,8 +233,11 @@ if (btnRoom) {
 var btnDispen = document.getElementById('btn-dispen');
 if (btnDispen) {
   btnDispen.addEventListener('click', function() {
-    showFormDialog('Surat Dispensasi', 
-      'Form untuk mengajukan surat dispensasi karena sakit, acara kampus, atau keperluan lainnya.');
+    if(typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router){
+      app.views.main.router.navigate('/dispen/');
+    } else {
+      window.location.href = 'pages/dispen.html';
+    }
   });
 }
 
