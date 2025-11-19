@@ -77,17 +77,13 @@ function initializeCalendar() {
 
     renderCalendar();
 
-    // Jika sudah mencapai jumlah yang dibutuhkan, auto-konfirmasi (isi form dan kembali)
+    // Jika sudah mencapai jumlah yang dibutuhkan, keluar dari mode pemilihan dan kembali ke form
     try {
       if (window.dateSelectionState && window.dateSelectionState.isSelectingMode &&
           window.dateSelectionState.selectedDates.length === window.dateSelectionState.requiredDays) {
-        // Call confirm function if available
-        if (typeof window.confirmDateSelection === 'function') {
-          window.confirmDateSelection(window.dateSelectionState.selectedDates);
-        }
         // exit selection mode
         window.dateSelectionState.isSelectingMode = false;
-        // navigate back to peminjaman page
+        // navigate back to peminjaman page; peminjaman page akan mengambil selectedDates dari window.dateSelectionState
         if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
           app.views.main.router.navigate('/peminjaman/');
         } else {

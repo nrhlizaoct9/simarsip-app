@@ -196,16 +196,26 @@
     e.preventDefault();
     addFormError.textContent = '';
 
-    const borrowDate = document.getElementById('borrowDate').value;
+    const borrowDateInputValue = document.getElementById('borrowDate').value;
     const duration = parseInt(document.getElementById('duration').value);
-    const returnDate = new Date(borrowDate);
-    returnDate.setDate(returnDate.getDate() + duration);
+    // Use selectedDates from global state if available (multi-date selection), otherwise parse single date
+    const selectedDates = window.dateSelectionState && window.dateSelectionState.selectedDates && window.dateSelectionState.selectedDates.length ? window.dateSelectionState.selectedDates : [];
+    let returnDate;
+    if (selectedDates.length) {
+      const last = new Date(selectedDates[selectedDates.length - 1]);
+      returnDate = new Date(last);
+      returnDate.setDate(returnDate.getDate() + 1);
+    } else {
+      const singleDate = new Date(borrowDateInputValue);
+      returnDate = new Date(singleDate);
+      returnDate.setDate(returnDate.getDate() + duration);
+    }
     const returnDateStr = returnDate.toISOString().split('T')[0];
 
     const formData = {
       eventName: document.getElementById('eventName').value.trim(),
       roomType: document.getElementById('roomType').value,
-      borrowDate: new Date(borrowDate),
+      borrowDate: (selectedDates.length ? selectedDates.slice() : [new Date(borrowDateInputValue).toISOString().split('T')[0]]),
       duration: duration,
       returnDate: new Date(returnDateStr),
       startTime: document.getElementById('startTime').value,
@@ -216,7 +226,7 @@
     };
 
     // Validasi wajib
-    if (!formData.eventName || !formData.roomType || !borrowDate || !duration ||
+    if (!formData.eventName || !formData.roomType || (selectedDates.length===0 && !borrowDateInputValue) || !duration ||
         !formData.startTime || !formData.endTime || !fileInput.files[0]) {
       addFormError.textContent = 'Semua kolom wajib diisi kecuali Catatan.';
       return;
@@ -255,5 +265,26 @@
 
   // Update duration info when form loads
   window.updateDurationInfo();
+
+  // If this page is opened after selecting dates in calendar, populate the borrowDate input
+  (function populateFromSelection(){
+    try {
+      const sel = window.dateSelectionState && window.dateSelectionState.selectedDates ? window.dateSelectionState.selectedDates : [];
+      if (sel && sel.length) {
+        const dateTexts = sel.map(d => {
+          const date = new Date(d);
+          return date.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+        });
+        const borrowInput = document.getElementById('borrowDate');
+        if (borrowInput) borrowInput.value = dateTexts.join(', ');
+        // update info and leave selectedDates intact for submission
+        window.updateDurationInfo();
+        // clear selection mode flag
+        if (window.dateSelectionState) window.dateSelectionState.isSelectingMode = false;
+      }
+    } catch (err) {
+      console.error('[peminjaman.html] populateFromSelection error', err);
+    }
+  })();
 </script>
 </div>
