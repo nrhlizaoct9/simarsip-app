@@ -76,23 +76,6 @@ function initializeCalendar() {
     }
 
     renderCalendar();
-
-    // Jika sudah mencapai jumlah yang dibutuhkan, keluar dari mode pemilihan dan kembali ke form
-    try {
-      if (window.dateSelectionState && window.dateSelectionState.isSelectingMode &&
-          window.dateSelectionState.selectedDates.length === window.dateSelectionState.requiredDays) {
-        // exit selection mode
-        window.dateSelectionState.isSelectingMode = false;
-        // navigate back to peminjaman page; peminjaman page akan mengambil selectedDates dari window.dateSelectionState
-        if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
-          app.views.main.router.navigate('/peminjaman/');
-        } else {
-          window.location.href = '/pages/peminjaman.html';
-        }
-      }
-    } catch (err) {
-      console.error('[calendar.js] auto-confirm error:', err);
-    }
   }
 
   function showDateSelectionTips() {
@@ -246,7 +229,6 @@ function initializeCalendar() {
         confirmButton.className = 'btn-confirm-dates';
         confirmButton.textContent = 'Konfirmasi Tanggal';
         confirmButton.addEventListener('click', () => {
-          console.log('[btn-confirm-dates] clicked', window.dateSelectionState);
           if (window.dateSelectionState.selectedDates.length !== window.dateSelectionState.requiredDays) {
             if (typeof app !== 'undefined' && app.dialog) {
               app.dialog.alert(`Pilih ${window.dateSelectionState.requiredDays} tanggal`, 'Belum Lengkap');
@@ -260,14 +242,26 @@ function initializeCalendar() {
           
           // Call confirmation function in peminjaman.html
           if (typeof window.confirmDateSelection === 'function') {
-            console.log('[btn-confirm-dates] Calling confirmDateSelection with:', window.dateSelectionState.selectedDates);
-            window.confirmDateSelection(window.dateSelectionState.selectedDates);
-            
-            // Navigate back to peminjaman form
-            if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
-              app.views.main.router.navigate('/peminjaman/');
-            } else {
-              window.location.href = '/peminjaman.html';
+            // confirmDateSelection will attempt to write the dates into the originating page
+            // and navigate back once successful. It returns a Promise<boolean>.
+            try {
+              const maybePromise = window.confirmDateSelection(window.dateSelectionState.selectedDates);
+              if (maybePromise && typeof maybePromise.then === 'function') {
+                maybePromise.then(function(success){
+                  // nothing else required; confirmDateSelection already navigates on success/failure
+                }).catch(function(){
+                  // ignore, confirmDateSelection handles fallback navigation
+                });
+              }
+            } catch (e) {
+              // best-effort fallback navigation
+              try {
+                if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
+                  app.views.main.router.navigate('/peminjaman/');
+                } else {
+                  window.location.href = '/peminjaman.html';
+                }
+              } catch (err) {}
             }
           }
         });

@@ -77,7 +77,7 @@
             <div class="item-inner">
               <div class="item-title item-label">Durasi Peminjaman (Hari) <span class="required-mark">*</span></div>
               <div class="item-input-wrap">
-                <select id="duration" name="duration" title="Durasi Peminjaman" required onchange="updateDurationInfo()">
+                <select id="duration" name="duration" title="Durasi Peminjaman" required onchange="updateEquipmentDurationInfo()">
                   <option value="">Pilih Durasi</option>
                   <option value="1">1 Hari</option>
                   <option value="2">2 Hari</option>
@@ -97,7 +97,7 @@
               <div class="item-title item-label">Tanggal Peminjaman <span class="required-mark">*</span></div>
               <div class="item-input-wrap">
                 <input id="borrowDate" name="borrowDate" type="text" title="Tanggal Peminjaman" placeholder="Pilih dari kalender" readonly>
-                <button type="button" class="btn-open-calendar" onclick="openCalendarForDateSelection()">Buka Kalender</button>
+                <button type="button" class="btn-open-calendar" onclick="openCalendarForDateSelection('#borrowDate','peralatan')">Buka Kalender</button>
                 <div id="durationInfo"></div>
               </div>
             </div>
@@ -155,7 +155,7 @@
   <!-- Include calendar script -->
   <script src="js/calendar.js"></script>
   <script>
-    console.log('[pages/peralatan.html] Equipment rental form loaded.');
+    // Equipment rental form script loaded
 
     const addEquipmentForm = document.getElementById('add-equipment-form');
     const fileInput = document.getElementById('letterFile');
@@ -197,12 +197,10 @@
       e.preventDefault();
       addFormError.textContent = '';
 
-      const borrowDate = document.getElementById('borrowDate').value;
+      const borrowEl = document.getElementById('borrowDate');
+      const borrowIsoList = (borrowEl && borrowEl.dataset && borrowEl.dataset.iso) ? borrowEl.dataset.iso.split(',') : [borrowEl.value];
       const duration = parseInt(document.getElementById('duration').value);
-      // Use shared dateSelectionState (set when opening calendar)
-      const selectedDates = window.dateSelectionState?.selectedDates || [];
-      const lastSelected = selectedDates.length ? new Date(selectedDates[selectedDates.length - 1]) : new Date();
-      const returnDate = new Date(lastSelected);
+      const returnDate = new Date(borrowIsoList[borrowIsoList.length - 1] || new Date());
       returnDate.setDate(returnDate.getDate() + 1);
       const returnDateStr = returnDate.toISOString().split('T')[0];
 
@@ -211,7 +209,7 @@
         equipmentName: document.getElementById('equipmentName').value.trim(),
         quantity: parseInt(document.getElementById('quantity').value),
         duration: duration,
-        borrowDate: window.dateSelectionState?.selectedDates || [],
+        borrowDate: borrowIsoList || [],
         borrowTime: document.getElementById('borrowTime').value,
         returnDate: new Date(returnDateStr),
         notes: document.getElementById('notes').value.trim(),
@@ -239,8 +237,8 @@
       // Reset form
       addEquipmentForm.reset();
       fileInfo.textContent = '';
-      if (window.dateSelectionState) window.dateSelectionState.selectedDates = [];
-      window.updateDurationInfo();
+      window.equipmentDateSelectionState.selectedDates = [];
+      window.updateEquipmentDurationInfo();
 
       alert('Peminjaman peralatan berhasil ditambahkan!');
       
@@ -253,6 +251,6 @@
     });
 
     // Update duration info when form loads
-    window.updateDurationInfo();
+    window.updateEquipmentDurationInfo();
   </script>
 </div>

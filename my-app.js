@@ -126,21 +126,91 @@ var mainView = app.views.create('.view-main');
 // Ensure calendar script is loaded and initialize calendar when calendar page opens
 app.on('pageAfterIn', function (page) {
   if (page.name === 'calendar') {
-    console.log('[my-app.js] Calendar page fully initialized via pageAfterIn');
     // Ensure popups are initialized and then call calendar functions
     try {
-      console.log('[my-app.js] app object available:', typeof app !== 'undefined');
-      console.log('[my-app.js] app.popup object available:', typeof app !== 'undefined' && typeof app.popup !== 'undefined');
-
       // Initialize popups first
       app.popup.create({ el: '#popup-day-details' }); // Only initialize day details popup
 
       // Then initialize calendar and add booking functionality
       if (typeof initializeCalendar === 'function') initializeCalendar();
-      if (typeof initializeFab === 'function') initializeFab(); // Use initializeFab
+      if (typeof initializeFab === 'function') initializeFab();
+      try { window.hideLoading(); } catch (e) {}
     } catch (err) {
       console.error('[my-app.js] Error during calendar page initialization:', err);
     }
+  }
+});
+
+// Accessibility: blur focused element before a page is hidden and mark outgoing page inert
+app.on('pageBeforeOut', function(page) {
+  try {
+    // Remove focus from any element inside the page we're about to hide
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
+    // Mark the outgoing page as inert so assistive tech won't try to focus it
+    if (page && page.el) {
+      try { page.el.inert = true; } catch (e) { /* inert may be read-only in some envs */ }
+    }
+  } catch (err) {
+    console.error('[my-app.js] pageBeforeOut accessibility cleanup error:', err);
+  }
+});
+
+// Remove inert flag when a page becomes active again
+app.on('pageAfterIn', function(page) {
+  try {
+    if (page && page.el) {
+      try { page.el.inert = false; } catch (e) { /* ignore */ }
+    }
+    // Ensure nothing is left focused from previous hidden pages
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
+    // Also hide any global loader when a page is ready
+    try { window.hideLoading(); } catch (e) {}
+    // If there are pending selectedDates from the calendar, try to apply them to this page
+    try {
+      if (window.dateSelectionState && Array.isArray(window.dateSelectionState.selectedDates) && window.dateSelectionState.selectedDates.length > 0) {
+        // If sourcePage matches this page, or if no sourcePage set but a targetSelector matches inside this page
+        const src = window.dateSelectionState.sourcePage;
+        const targetSel = window.dateSelectionState.targetSelector;
+        const pageName = page && page.name ? page.name : (page && page.el && page.el.dataset ? page.el.dataset.name : null);
+        let shouldApply = false;
+        if (src && pageName && src === pageName) shouldApply = true;
+        if (!shouldApply && targetSel && page && page.el && page.el.querySelector(targetSel)) shouldApply = true;
+
+        if (shouldApply) {
+          // write into the first matching element inside this page
+          const el = (page.el.querySelector && (page.el.querySelector(targetSel) || page.el.querySelector('#borrowDate') || page.el.querySelector('#date') || page.el.querySelector('input[name="date"]')));
+          if (el) {
+            // format display and ISO
+            const dates = window.dateSelectionState.selectedDates;
+            const dateTexts = dates.map(d => {
+              const date = new Date(d);
+              return date.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            });
+            const displayValue = dateTexts.join(', ');
+            const isoDates = dates.map(d => {
+              const dt = new Date(d);
+              const yyyy = dt.getFullYear();
+              const mm = String(dt.getMonth() + 1).padStart(2, '0');
+              const dd = String(dt.getDate()).padStart(2, '0');
+              return `${yyyy}-${mm}-${dd}`;
+            });
+            const isoValue = isoDates.join(',');
+            try { el.value = displayValue; } catch (e) {}
+            try { el.dataset && (el.dataset.iso = isoValue); } catch (e) {}
+            try { if (typeof app !== 'undefined' && app.toast) app.toast.create({ text: 'Tanggal diterapkan ke form', position: 'center', closeTimeout: 1200 }).open(); } catch (e) {}
+            // leave selectedDates as-is in case user re-opens calendar; do not clear immediately
+          }
+        }
+      }
+    } catch (e) {
+      console.error('[my-app.js] error applying pending dates to pageAfterIn:', e);
+    }
+  } catch (err) {
+    console.error('[my-app.js] pageAfterIn accessibility setup error:', err);
   }
 });
 
@@ -149,12 +219,9 @@ var btnRoom = document.getElementById('btn-room');
 if (btnRoom) {
   btnRoom.addEventListener('click', function() {
     // Navigate ke halaman peminjaman ruangan
-    console.log('[my-app.js] btn-room clicked');
     if(typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router){
-      console.log('[my-app.js] Navigating to /peminjaman/');
       app.views.main.router.navigate('/peminjaman/');
     } else {
-      console.log('[my-app.js] Fallback to direct href');
       window.location.href = 'pages/peminjaman.html';
     }
   });
@@ -163,26 +230,16 @@ if (btnRoom) {
 var btnDispen = document.getElementById('btn-dispen');
 if (btnDispen) {
   btnDispen.addEventListener('click', function() {
-    // Navigate to dispensasi form page
-    console.log('[my-app.js] btn-dispen clicked - navigate to /dispen/');
-    if(typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router){
-      app.views.main.router.navigate('/dispen/');
-    } else {
-      window.location.href = 'pages/dispen.html';
-    }
+    showFormDialog('Surat Dispensasi', 
+      'Form untuk mengajukan surat dispensasi karena sakit, acara kampus, atau keperluan lainnya.');
   });
 }
 
 var btnItem = document.getElementById('btn-item');
 if (btnItem) {
   btnItem.addEventListener('click', function() {
-    // Navigate to equipment rental page instead of opening the old modal
-    console.log('[my-app.js] btn-item clicked - navigate to /peralatan/');
-    if(typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router){
-      app.views.main.router.navigate('/peralatan/');
-    } else {
-      window.location.href = 'pages/peralatan.html';
-    }
+    showFormDialog('Peminjaman Peralatan', 
+      'Form untuk meminjam peralatan seperti proyektor, sound system, atau kamera.');
   });
 }
 
@@ -581,6 +638,29 @@ window.dateSelectionState = {
   isSelectingMode: false
 };
 
+// Enable date-selection diagnostic logging during this debugging session.
+// Set to false to disable verbose logs.
+window.__DATE_SELECTION_DEBUG = true;
+
+// Open calendar for a single-date selection (used by Dispen form)
+window.openCalendarForSingleDate = function(targetSelector, sourceName) {
+  // optional: targetSelector (e.g. '#borrowDate'), sourceName (e.g. 'dispen')
+  window.dateSelectionState.requiredDays = 1;
+  window.dateSelectionState.selectedDates = [];
+  window.dateSelectionState.isSelectingMode = true;
+  if (targetSelector) window.dateSelectionState.targetSelector = targetSelector;
+  if (sourceName) window.dateSelectionState.sourcePage = sourceName;
+  try { if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur(); } catch (e) {}
+  try { window.showLoading('Membuka kalender...'); } catch (e) {}
+  setTimeout(() => {
+    if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
+      app.views.main.router.navigate('/calendar/');
+    } else {
+      window.location.href = '/calendar.html';
+    }
+  }, 100);
+};
+
 // ===== GLOBAL FUNCTIONS FOR DATE SELECTION =====
 window.updateDurationInfo = function() {
   const duration = document.getElementById('duration') ? document.getElementById('duration').value : '';
@@ -601,8 +681,9 @@ window.updateDurationInfo = function() {
   }
 };
 
-window.openCalendarForDateSelection = function() {
-  const duration = document.getElementById('duration') ? document.getElementById('duration').value : '';
+window.openCalendarForDateSelection = function(targetSelector, sourceName) {
+  const durationEl = document.getElementById('duration');
+  const duration = durationEl ? durationEl.value : '';
   if (!duration) {
     if (typeof app !== 'undefined' && app.dialog) {
       app.dialog.alert('Pilih durasi peminjaman terlebih dahulu', 'Info');
@@ -615,32 +696,156 @@ window.openCalendarForDateSelection = function() {
   window.dateSelectionState.requiredDays = parseInt(duration);
   window.dateSelectionState.selectedDates = [];
   window.dateSelectionState.isSelectingMode = true;
+  // allow caller to specify target selector and source name for robust writing
+  if (targetSelector) window.dateSelectionState.targetSelector = targetSelector;
+  if (sourceName) window.dateSelectionState.sourcePage = sourceName;
 
-  console.log('[openCalendarForDateSelection] Mode selection activated:', window.dateSelectionState);
-
+  // Blur active element and show loading while navigating to calendar
+  try { if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur(); } catch (e) {}
+  try { window.showLoading('Membuka kalender...'); } catch (e) {}
   // Navigate to calendar dengan mode selection
   setTimeout(() => {
     if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
-      console.log('[openCalendarForDateSelection] Using Framework7 router');
       app.views.main.router.navigate('/calendar/');
     } else {
-      console.log('[openCalendarForDateSelection] Using fallback navigation');
       window.location.href = '/calendar.html';
     }
   }, 100);
 };
 
-window.confirmDateSelection = function(dates) {
-  const borrowDateInput = document.getElementById('borrowDate');
-  if (!borrowDateInput || !dates || dates.length === 0) return;
+// Backwards-compatible alias used by peralatan.html
+window.openEquipmentCalendar = function() {
+  if (typeof window.openCalendarForDateSelection === 'function') {
+    // call with selector and source so confirmDateSelection writes back correctly
+    return window.openCalendarForDateSelection('#borrowDate', 'peralatan');
+  }
+};
+window.confirmDateSelection = function(dates, options) {
+  options = options || {};
+  const maxAttempts = options.maxAttempts || 12; // ~12 * 200ms = 2.4s
+  const intervalMs = options.intervalMs || 200;
+
+  if (!dates || dates.length === 0) {
+    try { window.hideLoading(); } catch (e) {}
+    return Promise.resolve(false);
+  }
 
   // Format dates as display text
   const dateTexts = dates.map(d => {
     const date = new Date(d);
     return date.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
   });
-  
-  borrowDateInput.value = dateTexts.join(', ');
-  window.dateSelectionState.selectedDates = dates;
-  window.updateDurationInfo();
+  const displayValue = dateTexts.join(', ');
+  // also prepare ISO strings for reliable parsing/storage
+  const isoDates = dates.map(d => {
+    const dt = new Date(d);
+    const yyyy = dt.getFullYear();
+    const mm = String(dt.getMonth() + 1).padStart(2, '0');
+    const dd = String(dt.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  });
+  const isoValue = isoDates.join(',');
+
+  // Determine candidate selectors based on known pages
+  const source = window.dateSelectionState && window.dateSelectionState.sourcePage ? window.dateSelectionState.sourcePage : null;
+  const candidates = [];
+  // If a targetSelector was provided when opening, try it first
+  if (window.dateSelectionState && window.dateSelectionState.targetSelector) {
+    candidates.push(window.dateSelectionState.targetSelector);
+  }
+  if (source) {
+    // prefer writing into the originating page fragment
+    candidates.push(`[data-name="${source}"] #borrowDate`);
+    candidates.push(`[data-name="${source}"] #date`);
+    candidates.push(`[data-name="${source}"] input[name=\"date\"]`);
+  }
+  // common fallbacks
+  candidates.push('#borrowDate');
+  candidates.push('#date');
+  // Additional page-position fallbacks for Framework7 classes
+  candidates.push('.page-on-center #borrowDate');
+  candidates.push('.page-on-center #date');
+  candidates.push('.page-on-left #borrowDate');
+  candidates.push('.page-on-right #borrowDate');
+
+  let attempt = 0;
+
+  function tryWrite() {
+    attempt++;
+    if (window.__DATE_SELECTION_DEBUG) console.debug('[confirmDateSelection] attempt', attempt, 'candidates', candidates, 'source', source);
+    for (let sel of candidates) {
+      try {
+        const el = document.querySelector(sel);
+        if (window.__DATE_SELECTION_DEBUG) console.debug('[confirmDateSelection] checking selector', sel, 'el=', el);
+        if (!el) continue;
+        // skip if element or its ancestor is aria-hidden
+        if (el.closest && el.closest('[aria-hidden="true"]')) {
+          if (window.__DATE_SELECTION_DEBUG) console.debug('[confirmDateSelection] selector inside aria-hidden, skipping', sel);
+          continue;
+        }
+        // write display and ISO values
+        try {
+          if ('value' in el) {
+            el.value = displayValue;
+          } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.value = displayValue;
+          } else {
+            el.textContent = displayValue;
+          }
+        } catch (err) {}
+        try { el.dataset && (el.dataset.iso = isoValue); } catch (e) {}
+
+        window.dateSelectionState.selectedDates = dates;
+        if (window.__DATE_SELECTION_DEBUG) console.debug('[confirmDateSelection] wrote value to', sel, displayValue);
+        try { window.updateDurationInfo(); } catch (e) {}
+        try { window.hideLoading(); } catch (e) {}
+
+        // Show a small toast to indicate success (Framework7) — helpful while debugging
+        try {
+          if (typeof app !== 'undefined' && app.toast) {
+            app.toast.create({ text: 'Tanggal berhasil disimpan', position: 'center', closeTimeout: 1400 }).open();
+          }
+        } catch (e) { /* ignore toast failures */ }
+
+        // After successful write, navigate back to the source page if possible
+        const target = source ? `/${source}/` : '/peminjaman/';
+        try {
+          if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
+            app.views.main.router.navigate(target);
+          }
+        } catch (e) {}
+
+        return Promise.resolve(true);
+      } catch (err) {
+        // ignore and continue
+      }
+    }
+
+    if (attempt >= maxAttempts) {
+      try { window.hideLoading(); } catch (e) {}
+      try {
+        if (typeof app !== 'undefined' && app.toast) {
+          app.toast.create({ text: 'Gagal menyimpan tanggal — silakan coba lagi', position: 'center', closeTimeout: 2200 }).open();
+        }
+      } catch (e) {}
+      // fallback: navigate back anyway
+      try {
+        if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
+          const target = source ? `/${source}/` : '/peminjaman/';
+          app.views.main.router.navigate(target);
+        }
+      } catch (e) {}
+      return Promise.resolve(false);
+    }
+
+    // schedule next attempt
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(tryWrite());
+      }, intervalMs);
+    });
+  }
+
+  // start attempts
+  return tryWrite();
 };

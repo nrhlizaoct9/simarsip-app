@@ -76,12 +76,8 @@
   <!-- Include calendar script -->
   <script src="js/calendar.js"></script>
   <script>
-    console.log('[pages/calendar.html] calendar.js script loaded.');
-    console.log('[pages/calendar.html] dateSelectionState:', window.dateSelectionState);
-
-    // Initialize calendar
+    // calendar page script loaded; initialize calendar if available
     if (typeof initializeCalendar === 'function') {
-      console.log('[pages/calendar.html] Calling initializeCalendar()');
       initializeCalendar();
     }
 

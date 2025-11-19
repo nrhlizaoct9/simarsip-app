@@ -431,6 +431,37 @@
   box-sizing: border-box !important;
 }
 
+/* Global loader fallback (small overlay + spinner) */
+#global-loader {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  z-index: 12000;
+}
+#global-loader .gl-spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 5px solid rgba(255,255,255,0.15);
+  border-top-color: #fff;
+  animation: gl-spin 1s linear infinite;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+#global-loader .gl-message {
+  margin-top: 10px;
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+}
+@keyframes gl-spin { to { transform: rotate(360deg); } }
+
 /* Card utama kalender */
 .page-calendar .calendar-card {
   background: #fff !important;
