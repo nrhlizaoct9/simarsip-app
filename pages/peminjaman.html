@@ -3,7 +3,7 @@
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
       <div class="left">
-        <a href="/" class="link">
+        <a href="/calendar/" class="link back">
           <i class="f7-icons">chevron_left</i>
           <span class="if-not-md">Back</span>
         </a>
@@ -107,7 +107,10 @@
               <div class="item-title item-label">Tanggal Peminjaman <span class="required-mark">*</span></div>
               <div class="item-input-wrap">
                 <input id="borrowDate" name="borrowDate" type="text" title="Tanggal Peminjaman" placeholder="Pilih dari kalender" readonly>
-                <button type="button" class="btn-open-calendar" onclick="openCalendarForDateSelection('#borrowDate','peminjaman')">Buka Kalender</button>
+                <button type="button" class="btn-open-calendar"
+                  onclick="app.views.main.router.navigate('/calendar/')">
+                  Buka Kalender
+                </button>
                 <div id="durationInfo"></div>
               </div>
             </div>
@@ -205,6 +208,7 @@
     const returnDateStr = returnDate.toISOString().split('T')[0];
 
     const formData = {
+      id: app.mockBookings.length > 0 ? Math.max(...app.mockBookings.map(b => b.id)) + 1 : 1,
       eventName: document.getElementById('eventName').value.trim(),
       roomType: document.getElementById('roomType').value,
       borrowDate: new Date(borrowIso),
@@ -233,10 +237,10 @@
     // Simpan ke global mock array
     if (typeof app !== 'undefined' && app.mockBookings) {
       app.mockBookings.push(formData);
+      // Panggil fungsi untuk menyimpan bookings ke localStorage
+      app.saveBookings();
     } else {
       console.error('[peminjaman.html] app.mockBookings not found. Booking not saved.');
-      app.dialog.alert('Gagal menambahkan peminjaman. Data tidak dapat disimpan.', 'Error');
-      return;
     }
 
     // Reset form

@@ -3,10 +3,6 @@
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
       <div class="left">
-        <a href="/" class="link">
-          <i class="f7-icons">chevron_left</i>
-          <span class="if-not-md">Back</span>
-        </a>
       </div>
       <div class="title">Kalender Peminjaman</div>
     </div>
@@ -17,8 +13,6 @@
       <div class="calendar-header"></div>
       <div class="calendar-days"></div>
     </div>
-
-    <div class="calendar-tips"></div>
 
     <div class="legend-box">
       <div class="legend-title">Status Peminjaman:</div>
@@ -38,10 +32,6 @@
         <div class="legend-item">
           <div class="legend-color returned"></div>
           <span>Sudah dikembalikan</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-color selected"></div>
-          <span>Terpilih</span>
         </div>
       </div>
     </div>
@@ -76,10 +66,7 @@
   <!-- Include calendar script -->
   <script src="js/calendar.js"></script>
   <script>
-    // calendar page script loaded; initialize calendar if available
-    if (typeof initializeCalendar === 'function') {
-      initializeCalendar();
-    }
+    console.log('[pages/calendar.html] calendar.js script loaded.');
 
     // Redirect FAB add button ke halaman peminjaman
     const fabAdd = document.getElementById('fab-add');
@@ -88,7 +75,7 @@
         e.preventDefault();
         if(typeof app !== 'undefined' && app.views && app.views.main){
           // Framework7 SPA navigate
-          app.views.main.router.navigate('/peminjaman/');
+          app.views.main.router.navigate('/peminjaman.html');
         } else {
           // fallback non-SPA
           window.location.href = 'peminjaman.html';
@@ -99,12 +86,10 @@
 
   <div class="toolbar toolbar-bottom">
     <div class="toolbar-inner">
-      <a href="/" class="link">
-        <div class="link-content">
-          <i class="f7-icons">house_fill</i>
-          <span>Beranda</span>
-        </div>
-      </a>
+<a href="../index.html" class="link external">
+  <i class="f7-icons">house_fill</i>
+  <span>Beranda</span>
+</a>
     </div>
   </div>
 </div>
