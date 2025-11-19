@@ -12,6 +12,7 @@ var app = new Framework7({
   autoDarkTheme: true,
   preloadPreviousPage: true // Keep this from HEAD
 });
+window.app = app;
 
 // Global mock data for bookings (from HEAD)
 app.mockBookings = [
@@ -22,14 +23,14 @@ app.mockBookings = [
   { id: 5, borrowerName: 'Rudi Hartono', item: 'Ruang Meeting C', type: 'Ruangan', status: 'Pending', date: new Date(2025,10,20), startTime: '14:00', endTime: '16:00' },
   { id: 6, borrowerName: 'Fajar Nugroho', item: 'Kamera DSLR', type: 'Barang', status: 'Pending', date: new Date(2025,10,22), startTime: '09:00', endTime: '10:00' },
   { id: 7, borrowerName: 'Gita Permata', item: 'Ruang Diskusi D', type: 'Ruangan', status: 'Sedang dipinjam', date: new Date(2025,10,25), startTime: '11:00', endTime: '13:00' },
-  { id: 8, borrowerName: 'Hendra Wijaya', item: 'Whiteboard Interaktif', type: 'Barang', status: 'Sudah dikembalikan', date: new Date(2025,10,28), startTime: '10:00', endTime: '16:00' }
+  { id: 8, borrowerName: 'H endra Wijaya', item: 'Whiteboard Interaktif', type: 'Barang', status: 'Sudah dikembalikan', date: new Date(2025,10,28), startTime: '10:00', endTime: '16:00' }
 ];
 
 // Data riwayat lengkap (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
 var allHistoryData = [
   {
     id: 1,
-    title: 'Peminjaman Ruangan - Lab Komputer',
+    title: 'Peminjaman Ruangan - Ruang 305',
     date: '10/06/2025 - 15:00-17:00',
     description: 'Kegiatan: Workshop Pemrograman',
     status: 'approve',
@@ -49,17 +50,17 @@ var allHistoryData = [
   },
   {
     id: 3,
-    title: 'Surat Dispensasi - Acara Kampus',
+    title: 'Surat Dispensasi - Acara Makrab',
     date: '09/06/2025',
-    description: 'Alasan: Mengikuti Lomba Hackathon',
+    description: 'Alasan: Menjadi panitia acara Masa Keakraban HMIF',
     status: 'approve',
     dokumen: [
-      { name: 'Bukti Lomba.jpg', url: '#' }
+      { name: 'Surat Dispensasi.pdf', url: '#' }
     ]
   },
   {
     id: 4,
-    title: 'Peminjaman Ruangan - Aula',
+    title: 'Peminjaman Ruangan - GSG',
     date: '08/06/2025 - 09:00-12:00',
     description: 'Kegiatan: Seminar Kewirausahaan',
     status: 'reject',
@@ -87,7 +88,7 @@ var allHistoryData = [
   },
   {
     id: 7,
-    title: 'Peminjaman Ruangan - Ruang Rapat',
+    title: 'Peminjaman Ruangan - Ruang 112',
     date: '05/06/2025 - 10:00-12:00',
     description: 'Kegiatan: Rapat Organisasi',
     status: 'wait',
@@ -113,7 +114,7 @@ var allHistoryData = [
   },
   {
     id: 10,
-    title: 'Peminjaman Ruangan - Lab Terpadu',
+    title: 'Peminjaman Ruangan - Ruang 301',
     date: '02/06/2025 - 14:00-16:00',
     description: 'Kegiatan: Lab Praktikum Jaringan',
     status: 'approve',
@@ -160,12 +161,20 @@ document.getElementById('btn-item').addEventListener('click', function() {
     'Form untuk meminjam peralatan seperti proyektor, sound system, atau kamera.');
 });
 
+//lili
 // Event handlers untuk status pengajuan (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
 document.getElementById('status-1').addEventListener('click', function() {
   showStatusDetail(
-    'Peminjaman Ruangan - Lab Komputer',
+    'Peminjaman Ruangan - Ruang 305',
     '10/06/2025 - 15:00-17:00',
-    'Kegiatan: Workshop Pemrograman<br>Ruangan: Lab Komputer Gedung A<br>Status: Disetujui',
+    `
+      Kegiatan: Workshop Pemrograman<br>
+      Ruangan: Ruang 305<br>
+      Status: Disetujui oleh Kemahasiswaan dan BAA<br><br>
+
+      <strong>Dokumen Pendukung:</strong><br>
+      <a href="dokumen/surat_permohonan.pdf" target="_blank">Surat Permohonan.pdf</a>
+    `,
     'approve'
   );
 });
@@ -174,25 +183,50 @@ document.getElementById('status-2').addEventListener('click', function() {
   showStatusDetail(
     'Peminjaman Peralatan - Proyektor',
     '10/06/2025 - 2 hari',
-    'Barang: Proyektor Epson<br>Jumlah: 1 unit<br>Durasi: 2 hari<br>Status: Menunggu persetujuan admin sarpras',
+    `
+      Barang: Proyektor Epson<br>
+      Jumlah: 1 unit<br>
+      Durasi: 2 hari<br>
+      Status: Menunggu persetujuan Departemen Umum
+
+      <strong>Dokumen Pendukung:</strong><br>
+      <a href="dokumen/surat_permohonan.pdf" target="_blank">Surat Permohonan.pdf</a>
+
+    `,
     'wait'
   );
 });
 
 document.getElementById('status-3').addEventListener('click', function() {
   showStatusDetail(
-    'Surat Dispensasi - Acara Kampus',
+    'Surat Dispensasi - Acara Makrab',
     '09/06/2025',
-    'Jenis: Acara Kampus<br>Alasan: Mengikuti Lomba Hackathon<br>Dosen: Dr. Ahmad Wijaya, M.Kom.<br>Status: Telah diverifikasi dosen',
-    'verified'
+    `
+      Jenis: Acara Makrab<br>
+      Alasan: Menjadi panitia acara Masa Keakraban HMIF<br>
+      Dosen: Dr. Ahmad Wijaya, M.Kom.<br>
+      Status: Disetujui oleh Kaprodi 
+
+      <strong>Dokumen Pendukung:</strong><br>
+      <a href="dokumen/surat_dispensasi.pdf" target="_blank">Surat Dispensasi.pdf</a>
+    `,
+    'approve'
   );
 });
 
 document.getElementById('status-4').addEventListener('click', function() {
   showStatusDetail(
-    'Peminjaman Ruangan - Aula',
+    'Peminjaman Ruangan - GSG',
     '08/06/2025 - 09:00-12:00',
-    'Kegiatan: Seminar Kewirausahaan<br>Ruangan: Aula Utama<br>Status: Ditolak<br><br><strong>Alasan Penolakan:</strong> Ruangan sudah dipesan untuk kegiatan wisuda.',
+    `
+      Kegiatan: Seminar Kewirausahaan<br>
+      Ruangan: GSG<br>
+      Status: Ditolak<br><br><strong>
+      Alasan Penolakan:</strong> Ruangan sudah dipesan untuk kegiatan acara lain.
+      
+      <strong>Dokumen Pendukung:</strong><br>
+      <a href="dokumen/surat_permohonan.pdf" target="_blank">Surat Permohonan.pdf</a>
+    `,
     'reject'
   );
 });

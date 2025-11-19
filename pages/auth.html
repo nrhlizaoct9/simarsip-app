@@ -1,0 +1,70 @@
+<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+<link rel="stylesheet" href="../my-app.css">
+<div class="auth-container">
+  <div class="auth-wrapper">
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="logo-icon"></div>
+      <h1>SIMARSIP</h1>
+      <p>Sistem Manajemen Peminjaman</p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="auth-form-container" id="login-form-container">
+      <h2>Masuk</h2>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="login-email">Email/Username</label>
+          <input type="text" id="login-email" name="email" placeholder="Masukkan email atau username" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" name="password" placeholder="Masukkan password" required>
+        </div>
+        <button type="submit" class="btn-primary" onclick="window.location.href='../index.html'">Masuk</button>
+
+      </form>
+      <!-- <p class="auth-footer">Belum punya akun? <a href="#" onclick="toggleAuthForm(event)">Daftar di sini</a></p> -->
+    </div>
+
+    <!-- Register Form -->
+    <!-- <div class="auth-form-container" id="register-form-container" style="display: none;">
+      <h2>Daftar</h2>
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="register-name">Nama Lengkap</label>
+          <input type="text" id="register-name" name="name" placeholder="Masukkan nama lengkap" required>
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" name="email" placeholder="Masukkan email" required>
+        </div>
+        <div class="form-group">
+          <label for="register-npm">NPM/NIM</label>
+          <input type="text" id="register-npm" name="npm" placeholder="Masukkan NPM/NIM" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" name="password" placeholder="Minimal 6 karakter" required>
+        </div>
+        <div class="form-group">
+          <label for="register-confirm-password">Konfirmasi Password</label>
+          <input type="password" id="register-confirm-password" name="confirm_password" placeholder="Ulangi password" required>
+        </div>
+        <button type="submit" class="btn-primary">Daftar</button>
+      </form>
+      <p class="auth-footer">Sudah punya akun? <a href="#" onclick="toggleAuthForm(event)">Masuk di sini</a></p>
+    </div> -->
+  </div>
+</div>
+<script>
+function handleLogin(event) {
+    event.preventDefault();
+
+    // Simpan status login
+    localStorage.setItem("isLoggedIn", "true");
+
+    // Arahkan ke index
+    window.location.href = "../index.html";
+}
+</script>

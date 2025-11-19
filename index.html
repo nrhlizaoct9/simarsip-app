@@ -13,6 +13,7 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="my-app.css">
+  
 </head>
 
 <body>
@@ -74,7 +75,7 @@
 
           <div class="status-card" id="status-1">
             <div class="status-card-content">
-              <strong>Peminjaman Ruangan - Lab Komputer</strong>
+              <strong>Peminjaman Ruangan - Ruang 305</strong>
               <small>10/06/2025 - 15:00-17:00</small>
             </div>
             <div class="badge-approve">Disetujui</div>
@@ -90,7 +91,7 @@
 
           <div class="status-card" id="status-3">
             <div class="status-card-content">
-              <strong>Surat Dispensasi - Acara Kampus</strong>
+              <strong>Surat Dispensasi - Acara Makrab</strong>
               <small>09/06/2025</small>
             </div>
             <div class="badge-approve">Disetujui</div>
@@ -98,7 +99,7 @@
 
           <div class="status-card" id="status-4">
             <div class="status-card-content">
-              <strong>Peminjaman Ruangan - Aula</strong>
+              <strong>Peminjaman Ruangan - GSG</strong>
               <small>08/06/2025 - 09:00-12:00</small>
             </div>
             <div class="badge-reject">Ditolak</div>
@@ -117,7 +118,7 @@
         <!-- TOOLBAR BAWAH -->
         <div class="toolbar toolbar-bottom">
           <div class="toolbar-inner">
-            <a href="#" class="link active">
+            <a href="#" class="link active" id="btn-home">
               <div class="link-content">
                 <i class="f7-icons">house_fill</i>
                 <span>Beranda</span>
@@ -133,6 +134,7 @@
               <div class="link-content">
                 <i class="f7-icons">bell_fill</i>
                 <span>Notifikasi</span>
+                <span id="notif-badge" class="notif-badge" style="display:none;"></span>
               </div>
             </a>
             <a href="#" class="link" id="btn-help">
@@ -190,5 +192,11 @@
   <script src="js/calendar.js"></script>
   <script src="js/routes.js"></script>
   <script src="my-app.js"></script>
+  <script>
+    // Jika belum login → arahkan ke auth.html
+    if (!localStorage.getItem("isLoggedIn")) {
+        window.location.href = "pages/auth.html";
+    }
+  </script>
 </body>
 </html>
