@@ -76,6 +76,27 @@ function initializeCalendar() {
     }
 
     renderCalendar();
+
+    // Jika sudah mencapai jumlah yang dibutuhkan, auto-konfirmasi (isi form dan kembali)
+    try {
+      if (window.dateSelectionState && window.dateSelectionState.isSelectingMode &&
+          window.dateSelectionState.selectedDates.length === window.dateSelectionState.requiredDays) {
+        // Call confirm function if available
+        if (typeof window.confirmDateSelection === 'function') {
+          window.confirmDateSelection(window.dateSelectionState.selectedDates);
+        }
+        // exit selection mode
+        window.dateSelectionState.isSelectingMode = false;
+        // navigate back to peminjaman page
+        if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
+          app.views.main.router.navigate('/peminjaman/');
+        } else {
+          window.location.href = '/pages/peminjaman.html';
+        }
+      }
+    } catch (err) {
+      console.error('[calendar.js] auto-confirm error:', err);
+    }
   }
 
   function showDateSelectionTips() {
