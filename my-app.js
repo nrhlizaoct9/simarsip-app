@@ -163,8 +163,13 @@ if (btnRoom) {
 var btnDispen = document.getElementById('btn-dispen');
 if (btnDispen) {
   btnDispen.addEventListener('click', function() {
-    showFormDialog('Surat Dispensasi', 
-      'Form untuk mengajukan surat dispensasi karena sakit, acara kampus, atau keperluan lainnya.');
+    // Navigate to dispensasi form page
+    console.log('[my-app.js] btn-dispen clicked - navigate to /dispen/');
+    if(typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router){
+      app.views.main.router.navigate('/dispen/');
+    } else {
+      window.location.href = 'pages/dispen.html';
+    }
   });
 }
 
