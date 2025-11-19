@@ -14,7 +14,7 @@ var routes = [
   },
   {
     path: '/peralatan/',
-    url: '/pages/peralatan.html'
+    url: '/pages/peralatan.html?v2'
   },
   {
     path: '/dispen/',

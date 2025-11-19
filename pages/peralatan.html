@@ -1,256 +1,238 @@
 <div data-name="peralatan" class="page page-peralatan">
-  <div class="navbar">
-    <div class="navbar-bg"></div>
-    <div class="navbar-inner">
-      <div class="left">
-        <a href="/" class="link">
-          <i class="f7-icons">chevron_left</i>
-          <span class="if-not-md">Back</span>
-        </a>
-      </div>
-      <div class="title">Tambah Peminjaman Peralatan</div>
-    </div>
-  </div>
-
-  <style>
-    .page-content { padding: 16px; }
-    #add-form-error { color: #b91c1c; font-size: 13px; min-height: 18px; margin-bottom: 12px; }
-    
-    /* Styling untuk field required */
-    .item-title .required-mark {
-      color: #dc2626;
-      font-weight: bold;
-      margin-left: 4px;
-    }
-    
-    /* Styling untuk file info */
-    .file-info-text {
-      color: #666;
-      display: block;
-      margin-top: 5px;
-      font-size: 12px;
-    }
-    
-    #fileInfo {
-      margin-top: 8px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-    
-    /* Styling untuk textarea */
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-  </style>
-
-  <div class="page-content">
-    <form id="add-equipment-form">
-      <div class="list no-hairlines-md">
-        <ul>
-          <!-- Nama Kegiatan -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Nama Kegiatan <span class="required-mark">*</span></div>
-              <div class="item-input-wrap"><input id="eventName" name="eventName" type="text" placeholder="Contoh: Workshop, Seminar, Rapat" title="Nama Kegiatan" required></div>
+    <div class="navbar">
+        <div class="navbar-bg"></div>
+        <div class="navbar-inner">
+            <div class="left">
+                <a href="/" class="link">
+                    <i class="f7-icons">chevron_left</i>
+                    <span class="if-not-md">Back</span>
+                </a>
             </div>
-          </li>
-
-          <!-- Nama Peralatan -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Nama Peralatan <span class="required-mark">*</span></div>
-              <div class="item-input-wrap"><input id="equipmentName" name="equipmentName" type="text" placeholder="Contoh: Proyektor, Laptop, Kamera" title="Nama Peralatan" required></div>
-            </div>
-          </li>
-
-          <!-- Jumlah Peralatan -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Jumlah <span class="required-mark">*</span></div>
-              <div class="item-input-wrap"><input id="quantity" name="quantity" type="number" min="1" placeholder="Berapa jumlahnya?" title="Jumlah" required></div>
-            </div>
-          </li>
-
-          <!-- Durasi Peminjaman (Berapa Hari) -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Durasi Peminjaman (Hari) <span class="required-mark">*</span></div>
-              <div class="item-input-wrap">
-                <select id="duration" name="duration" title="Durasi Peminjaman" required onchange="updateEquipmentDurationInfo()">
-                  <option value="">Pilih Durasi</option>
-                  <option value="1">1 Hari</option>
-                  <option value="2">2 Hari</option>
-                  <option value="3">3 Hari</option>
-                  <option value="5">5 Hari</option>
-                  <option value="7">1 Minggu</option>
-                  <option value="14">2 Minggu</option>
-                  <option value="30">1 Bulan</option>
-                </select>
-              </div>
-            </div>
-          </li>
-
-          <!-- Tanggal Peminjaman -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Tanggal Peminjaman <span class="required-mark">*</span></div>
-              <div class="item-input-wrap">
-                <input id="borrowDate" name="borrowDate" type="text" title="Tanggal Peminjaman" placeholder="Pilih dari kalender" readonly>
-                <button type="button" class="btn-open-calendar" onclick="openCalendarForDateSelection('#borrowDate','peralatan')">Buka Kalender</button>
-                <div id="durationInfo"></div>
-              </div>
-            </div>
-          </li>
-
-          <!-- Jam Peminjaman -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Jam Peminjaman <span class="required-mark">*</span></div>
-              <div class="item-input-wrap"><input id="borrowTime" name="borrowTime" type="time" title="Jam Peminjaman" required></div>
-            </div>
-          </li>
-
-          <!-- Catatan (Opsional) -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Catatan (Opsional)</div>
-              <div class="item-input-wrap"><textarea id="notes" name="notes" title="Catatan" placeholder="Keterangan atau kebutuhan khusus..."></textarea></div>
-            </div>
-          </li>
-
-          <!-- Upload Surat -->
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Unggah Softfile Surat <span class="required-mark">*</span></div>
-              <div class="item-input-wrap">
-                <input id="letterFile" name="letterFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" title="Unggah Softfile Surat" required>
-                <small class="file-info-text">Format: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</small>
-                <div id="fileInfo"></div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div id="add-form-error"></div>
-
-      <div>
-        <button type="submit" class="button button-fill button-large">Ajukan Peminjaman</button>
-      </div>
-    </form>
-  </div>
-
-  <div class="toolbar toolbar-bottom">
-    <div class="toolbar-inner">
-      <a href="/" class="link">
-        <div class="link-content">
-          <i class="f7-icons">house_fill</i>
-          <span>Beranda</span>
+            <div class="title">Peminjaman Peralatan</div>
         </div>
-      </a>
     </div>
-  </div>
 
-  <!-- Include calendar script -->
-  <script src="js/calendar.js"></script>
-  <script>
-    // Equipment rental form script loaded
+    <style>
+        .page-content {
+            padding: 16px;
+        }
 
-    const addEquipmentForm = document.getElementById('add-equipment-form');
-    const fileInput = document.getElementById('letterFile');
-    const fileInfo = document.getElementById('fileInfo');
-    const addFormError = document.getElementById('add-form-error');
-    const today = new Date().toISOString().split('T')[0];
+        #add-form-error {
+            color: #b91c1c;
+            font-size: 13px;
+            min-height: 18px;
+            margin-bottom: 12px;
+        }
 
-    // File input listener
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) {
-        fileInfo.textContent = '';
-        return;
-      }
+        /* Styling untuk field required */
+        .item-title .required-mark {
+            color: #dc2626;
+            font-weight: bold;
+            margin-left: 4px;
+        }
 
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
-      
-      if (file.size > maxSize) {
-        fileInfo.textContent = '✗ File terlalu besar (Max 5MB)';
-        fileInfo.style.color = '#dc2626';
-        fileInput.value = '';
-        return;
-      }
+        /* Styling untuk file info */
+        .file-info-text {
+            color: #666;
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+        }
 
-      if (!allowedTypes.includes(file.type)) {
-        fileInfo.textContent = '✗ Format tidak didukung';
-        fileInfo.style.color = '#dc2626';
-        fileInput.value = '';
-        return;
-      }
+        #fileInfo {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
 
-      fileInfo.textContent = '✓ ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
-      fileInfo.style.color = '#16a34a';
-    });
+        /* Styling untuk textarea */
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+    </style>
 
-    // Form submit handler
-    addEquipmentForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      addFormError.textContent = '';
+    <div class="page-content">
+        <form id="add-equipment-form">
+            <div class="list no-hairlines-md">
+                <ul>
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Nama Kegiatan <span class="required-mark">*</span></div>
+                            <div class="item-input-wrap">
+                                <input id="eventName" name="eventName" type="text"
+                                    placeholder="Contoh: Workshop, Dokumentasi" title="Nama Kegiatan" required>
+                            </div>
+                        </div>
+                    </li>
 
-      const borrowEl = document.getElementById('borrowDate');
-      const borrowIsoList = (borrowEl && borrowEl.dataset && borrowEl.dataset.iso) ? borrowEl.dataset.iso.split(',') : [borrowEl.value];
-      const duration = parseInt(document.getElementById('duration').value);
-      const returnDate = new Date(borrowIsoList[borrowIsoList.length - 1] || new Date());
-      returnDate.setDate(returnDate.getDate() + 1);
-      const returnDateStr = returnDate.toISOString().split('T')[0];
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Nama Peralatan <span class="required-mark">*</span></div>
+                            <div class="item-input-wrap">
+                                <input id="equipmentName" name="equipmentName" type="text"
+                                    placeholder="Contoh: Proyektor, Kamera, Sound System" title="Nama Peralatan"
+                                    required>
+                            </div>
+                        </div>
+                    </li>
 
-      const formData = {
-        eventName: document.getElementById('eventName').value.trim(),
-        equipmentName: document.getElementById('equipmentName').value.trim(),
-        quantity: parseInt(document.getElementById('quantity').value),
-        duration: duration,
-        borrowDate: borrowIsoList || [],
-        borrowTime: document.getElementById('borrowTime').value,
-        returnDate: new Date(returnDateStr),
-        notes: document.getElementById('notes').value.trim(),
-        letterFile: fileInput.files[0]?.name || '',
-        status: 'Pending',
-        type: 'Equipment'
-      };
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Jumlah <span class="required-mark">*</span></div>
+                            <div class="item-input-wrap">
+                                <input id="quantity" name="quantity" type="number" min="1"
+                                    placeholder="Masukkan jumlah alat" title="Jumlah" required>
+                            </div>
+                        </div>
+                    </li>
 
-      // Validasi wajib
-      if (!formData.eventName || !formData.equipmentName || !formData.quantity || !formData.duration ||
-          !formData.borrowTime || !fileInput.files[0] || formData.borrowDate.length === 0) {
-        addFormError.textContent = 'Semua kolom wajib diisi kecuali Catatan.';
-        return;
-      }
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Tanggal Peminjaman <span class="required-mark">*</span>
+                            </div>
+                            <div class="item-input-wrap">
+                                <input id="borrowDate" name="borrowDate" type="text" title="Tanggal Peminjaman"
+                                    placeholder="Pilih dari kalender" readonly>
+                                <button type="button" class="button button-small button-outline"
+                                    style="margin-top:8px; width: fit-content;"
+                                    onclick="openCalendarForDateSelection('#borrowDate','peralatan')">Buka
+                                    Kalender</button>
+                            </div>
+                        </div>
+                    </li>
 
-      // Simpan ke global mock array
-      if (typeof app !== 'undefined' && app.mockBookings) {
-        app.mockBookings.push(formData);
-      } else {
-        console.error('[peralatan.html] app.mockBookings not found. Booking not saved.');
-        alert('Gagal menambahkan peminjaman peralatan.');
-        return;
-      }
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Catatan (Opsional)</div>
+                            <div class="item-input-wrap">
+                                <textarea id="notes" name="notes" title="Catatan"
+                                    placeholder="Keterangan tambahan..."></textarea>
+                            </div>
+                        </div>
+                    </li>
 
-      // Reset form
-      addEquipmentForm.reset();
-      fileInfo.textContent = '';
-      window.equipmentDateSelectionState.selectedDates = [];
-      window.updateEquipmentDurationInfo();
+                    <li class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-title item-label">Unggah Softfile Surat <span
+                                    class="required-mark">*</span></div>
+                            <div class="item-input-wrap">
+                                <input id="letterFile" name="letterFile" type="file"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" title="Unggah Softfile Surat" required>
+                                <small class="file-info-text">Format: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</small>
+                                <div id="fileInfo"></div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
 
-      alert('Peminjaman peralatan berhasil ditambahkan!');
-      
-      // Navigate back to home
-      if (typeof app !== 'undefined' && app.views && app.views.main && app.views.main.router) {
-        app.views.main.router.navigate('/', { reloadCurrent: true });
-      } else {
-        window.location.href = '/';
-      }
-    });
+            <div id="add-form-error"></div>
 
-    // Update duration info when form loads
-    window.updateEquipmentDurationInfo();
-  </script>
+            <div class="block">
+                <button type="submit" class="button button-fill button-large">Ajukan Peminjaman</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="toolbar toolbar-bottom">
+        <div class="toolbar-inner">
+            <a href="/" class="link">
+                <div class="link-content">
+                    <i class="f7-icons">house_fill</i>
+                    <span>Beranda</span>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Inisialisasi variabel elemen form
+    var addEquipmentForm = document.getElementById('add-equipment-form');
+    var addFormError = document.getElementById('add-form-error');
+    var fileInput = document.getElementById('letterFile');
+    var fileInfo = document.getElementById('fileInfo');
+
+    // Set default tanggal hari ini (opsional)
+    var today = new Date().toISOString().split('T')[0];
+    // document.getElementById('borrowDate').value = today; // Uncomment jika ingin auto-fill tanggal hari ini
+
+    // Event listener untuk file upload (Validasi Size & Tampilan Nama File)
+    fileInput.addEventListener('change', function (e) {
+        var file = e.target.files[0];
+        if (file) {
+            // Validasi ukuran file (max 5MB)
+            var maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                fileInfo.textContent = '❌ File terlalu besar (Max 5MB)';
+                fileInfo.style.color = '#b91c1c';
+                fileInput.value = ''; // Reset input
+                return;
+            }
+            // Tampilkan nama file jika valid
+            fileInfo.textContent = '✓ ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
+            fileInfo.style.color = '#16a34a';
+        } else {
+            fileInfo.textContent = '';
+        }
+    });
+
+    // Event listener form submit
+    addEquipmentForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        addFormError.textContent = '';
+
+        // Ambil elemen tanggal
+        var borrowEl = document.getElementById('borrowDate');
+        // Mengutamakan ISO value dari dataset kalender (jika ada), fallback ke value input
+        var borrowIso = (borrowEl && borrowEl.dataset && borrowEl.dataset.iso) ? borrowEl.dataset.iso.split(',')[0] : borrowEl.value;
+
+        // Susun data form
+        var formData = {
+            eventName: document.getElementById('eventName').value.trim(),
+            equipmentName: document.getElementById('equipmentName').value.trim(),
+            quantity: parseInt(document.getElementById('quantity').value),
+            borrowDate: borrowIso ? new Date(borrowIso) : null,
+            notes: document.getElementById('notes').value.trim(),
+            letterFile: fileInput.files[0] ? fileInput.files[0].name : '',
+            type: 'Equipment', // Penanda tipe peminjaman
+            status: 'Pending'
+        };
+
+        // Validasi Input Wajib
+        if (!formData.eventName || !formData.equipmentName || !formData.quantity || !formData.borrowDate || !fileInput.files[0]) {
+            addFormError.textContent = 'Semua kolom bertanda (*) wajib diisi.';
+            return;
+        }
+
+        // Simpan ke global mock array (simulasi backend)
+        if (typeof app !== 'undefined' && app.mockBookings) {
+            app.mockBookings.push(formData);
+        } else {
+            console.error('[peralatan.html] app.mockBookings tidak ditemukan.');
+            // Fallback alert jika app tidak terdefinisi
+            alert('Gagal menyimpan data (App instance not found).');
+            return;
+        }
+
+        // Reset form setelah sukses
+        addEquipmentForm.reset();
+        fileInfo.textContent = '';
+
+        // Tampilkan notifikasi sukses dan kembali ke halaman utama
+        if (typeof app !== 'undefined' && app.dialog) {
+            app.dialog.alert('Peminjaman peralatan berhasil diajukan!', 'Sukses', function () {
+                // Navigasi kembali ke halaman home atau kalender
+                if (app.views && app.views.main && app.views.main.router) {
+                    app.views.main.router.back(); // Atau .navigate('/')
+                } else {
+                    window.location.href = '/';
+                }
+            });
+        } else {
+            alert('Peminjaman peralatan berhasil diajukan!');
+            window.location.href = '/';
+        }
+    });
+</script>
