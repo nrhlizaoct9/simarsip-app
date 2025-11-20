@@ -1,10 +1,6 @@
 // Routes Configuration - Static HTML Files
 var routes = [
   {
-    path: '/',
-    url: '/index.html'
-  },
-  {
     path: '/calendar/',
     url: '/pages/calendar.html'
   },
@@ -27,5 +23,9 @@ var routes = [
   {
     path: '/',
     url: '/pages/auth.html'
+  },
+  {
+    path: '/',
+    url: '/index.html'
   }
 ];

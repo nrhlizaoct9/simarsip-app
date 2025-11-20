@@ -3,9 +3,9 @@
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
       <div class="left">
-        <a href="#" class="link" onclick="window.location.href = 'index.html';">
+        <a href="#" class="link" onclick="app.view.main.router.back();">
           <i class="f7-icons">chevron_left</i>
-          <span class="if-not-md">Back</span>
+          <span class="if-not-md">Kembali</span>
         </a>
       </div>
       <div class="title">Profil Pengguna</div>
@@ -56,14 +56,14 @@
     <div class="list">
       <ul>
         <li>
-          <a href="#" class="item-link item-content">
+          <a href="#" class="item-link item-content" onclick="handleChangePassword(event)">
             <div class="item-inner">
               <div class="item-title">Ubah Kata Sandi</div>
             </div>
           </a>
         </li>
         <li>
-          <a href="auth.html" class="item-link item-content">
+          <a href="#" class="item-link item-content" onclick="handleLogout(event)">
             <div class="item-inner">
               <div class="item-title">Keluar</div>
             </div>

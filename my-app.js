@@ -78,12 +78,12 @@ var allHistoryData = [
   },
   {
     id: 6,
-    title: 'Surat Dispensasi - Sakit',
+    title: 'Surat Dispensasi - Acara Seminar IT',
     date: '06/06/2025',
-    description: 'Alasan: Sakit dengan sertifikat dokter',
-    status: 'verified',
+    description: 'Alasan: Menjadi panitia di Acara Seminar IT',
+    status: 'approve',
     dokumen: [
-      { name: 'Surat Dokter.pdf', url: '#' }
+      { name: 'Surat Dispensasi.pdf', url: '#' }
     ]
   },
   {
@@ -147,18 +147,1118 @@ app.on('pageAfterIn', function (page) {
 
 // Event handlers for menu cards (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
 document.getElementById('btn-room').addEventListener('click', function() {
-  showFormDialog('Peminjaman Ruangan', 
-    'Form untuk meminjam ruangan seperti Lab Komputer, Ruang Rapat, atau Aula.');
+  showRoomBookingForm();
+  function showRoomBookingForm() {
+  // 1. Siapkan daftar ruangan (HTML Options)
+  let roomOptions = `
+    <optgroup label="Laboratorium">
+      <option value="Lab Komputer">Lab Komputer</option>
+      <option value="Lab Basis Data">Lab Basis Data</option>
+      <option value="Lab Jaringan">Lab Jaringan</option>
+    </optgroup>
+    <optgroup label="Ruang Kelas">
+  `;
+  for (let i = 100; i <= 112; i++) {
+    roomOptions += `<option value="Ruang ${i}">Ruang ${i}</option>`;
+  }
+  roomOptions += `
+    </optgroup>
+    <optgroup label="Aula / Umum">
+      <option value="GSG">GSG (Gedung Serba Guna)</option>
+    </optgroup>
+  `;
+
+  // 2. Buat Dialog
+  var dialog = app.dialog.create({
+    title: 'Form Peminjaman Ruangan',
+    cssClass: 'room-booking-dialog',
+    content: `
+      <div class="dialog-form">
+        <div class="list no-hairlines-md">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Kegiatan</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="input-kegiatan" placeholder="Contoh: Workshop UI/UX">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Pilih Ruangan</div>
+                <div class="item-input-wrap">
+                  <select id="input-ruangan">
+                    ${roomOptions}
+                  </select>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Durasi (Hari)</div>
+                <div class="item-input-wrap">
+                  <select id="input-durasi">
+                    <option value="1" selected>1 Hari</option>
+                    <option value="2">2 Hari</option>
+                    <option value="3">3 Hari</option>
+                    <option value="4">4 Hari</option>
+                    <option value="5">5 Hari</option>
+                    <option value="6">6 Hari</option>
+                    <option value="7">7 Hari</option>
+                  </select>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Mode Tanggal</div>
+                <div class="item-input-wrap" style="display: flex; gap: 15px; margin-top: 5px;">
+                   <label class="radio"><input type="radio" name="date-mode" value="consecutive" checked><i class="icon-radio"></i> Berurutan</label>
+                   <label class="radio"><input type="radio" name="date-mode" value="random"><i class="icon-radio"></i> Acak / Terpisah</label>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input" id="wrap-consecutive">
+              <div class="item-inner">
+                <div class="item-title item-label">Tanggal Mulai</div>
+                <div class="item-input-wrap">
+                  <input type="date" id="input-tanggal-mulai">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input" id="wrap-random" style="display:none;">
+              <div class="item-inner">
+                <div class="item-title item-label">Pilih Tanggal (<span id="count-needed">1</span> hari)</div>
+                <div class="item-input-wrap">
+                  <input type="text" 
+                    placeholder="Klik untuk pilih tanggal..." 
+                    readonly 
+                    id="input-calendar-random"
+                    style="padding-right: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;"
+                  >
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content">
+              <div class="item-inner">
+                <div id="date-summary" style="font-size: 12px; color: #666; background: #f4f4f4; padding: 8px; border-radius: 6px; width: 100%;">
+                  <i class="f7-icons" style="font-size: 14px; vertical-align: middle;">info_circle</i> 
+                  Atur durasi dan pilih tanggal.
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Lampiran Surat</div>
+                <div class="item-input-wrap">
+                  <input type="file" id="input-file">
+                </div>
+              </div>
+            </li>
+             <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Catatan (Opsional)</div>
+                <div class="item-input-wrap">
+                  <textarea id="input-catatan" placeholder="Kebutuhan tambahan..."></textarea>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    `,
+    buttons: [
+      { text: 'Batal', close: true },
+      {
+        text: 'Ajukan',
+        bold: true,
+        onClick: function() {
+          // Validasi saat tombol Ajukan ditekan
+          const kegiatan = document.getElementById('input-kegiatan').value;
+          const mode = document.querySelector('input[name="date-mode"]:checked').value;
+          const durasi = parseInt(document.getElementById('input-durasi').value);
+          
+          if(!kegiatan) {
+             app.toast.create({ text: 'Nama kegiatan wajib diisi!', position: 'center', closeTimeout: 1500 }).open();
+             return false; 
+          }
+
+          // Validasi Tanggal
+          if (mode === 'random') {
+             // Cek input kalender custom
+             const calInput = document.getElementById('input-calendar-random').value;
+             if (!calInput) {
+                app.toast.create({ text: 'Silakan pilih tanggal peminjaman!', position: 'center', closeTimeout: 1500 }).open();
+                return false;
+             }
+             const selectedDatesCount = calInput.split(',').length;
+             if (selectedDatesCount !== durasi) {
+                app.toast.create({ text: `Durasi ${durasi} hari, tapi Anda memilih ${selectedDatesCount} tanggal. Mohon sesuaikan.`, position: 'center', closeTimeout: 2500 }).open();
+                return false;
+             }
+          } else {
+             // Cek input tanggal biasa
+             if (!document.getElementById('input-tanggal-mulai').value) {
+                app.toast.create({ text: 'Tanggal mulai harus diisi!', position: 'center', closeTimeout: 1500 }).open();
+                return false;
+             }
+          }
+
+          app.toast.create({
+            text: 'Permohonan berhasil diajukan!',
+            position: 'center',
+            closeTimeout: 2000,
+          }).open();
+        }
+      }
+    ],
+    on: {
+      opened: function () {
+        const durationInput = document.getElementById('input-durasi');
+        const startInput = document.getElementById('input-tanggal-mulai');
+        const randomInput = document.getElementById('input-calendar-random');
+        const summaryDiv = document.getElementById('date-summary');
+        const wrapConsecutive = document.getElementById('wrap-consecutive');
+        const wrapRandom = document.getElementById('wrap-random');
+        const radios = document.querySelectorAll('input[name="date-mode"]');
+        const labelCountNeeded = document.getElementById('count-needed');
+
+        // Variabel untuk menyimpan instance kalender F7
+        let calendarRandom;
+
+        // 1. Fungsi Update Tampilan (Berurutan vs Acak)
+        function updateMode() {
+          const mode = document.querySelector('input[name="date-mode"]:checked').value;
+          const durasi = parseInt(durationInput.value);
+          
+          if (mode === 'consecutive') {
+            wrapConsecutive.style.display = 'flex';
+            wrapRandom.style.display = 'none';
+            updateSummaryConsecutive();
+          } else {
+            wrapConsecutive.style.display = 'none';
+            wrapRandom.style.display = 'flex';
+            labelCountNeeded.innerText = durasi;
+            
+            // Reset dan inisialisasi kalender custom
+            if (calendarRandom) calendarRandom.destroy();
+            initRandomCalendar(durasi);
+            randomInput.value = ''; // Reset nilai
+            summaryDiv.innerHTML = `Silakan pilih <strong>${durasi} tanggal</strong> berbeda di kalender.`;
+          }
+        }
+
+        // 2. Logika Tanggal Berurutan
+        function updateSummaryConsecutive() {
+           if (startInput.value) {
+            const startDate = new Date(startInput.value);
+            const durasi = parseInt(durationInput.value);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + (durasi - 1));
+            
+            const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            
+            if(durasi === 1) {
+               summaryDiv.innerHTML = `Jadwal: <strong>${format(startDate)}</strong>`;
+            } else {
+               summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong> (Berurutan)`;
+            }
+            summaryDiv.style.background = "#e7f1ff";
+           }
+        }
+
+        // 3. Inisialisasi Kalender F7 (Multi-select)
+        function initRandomCalendar(maxDates) {
+           calendarRandom = app.calendar.create({
+             inputEl: '#input-calendar-random',
+             openIn: 'customModal',
+             header: true,
+             footer: true,
+             multiple: true, // KUNCI: Izinkan pilih banyak
+             dateFormat: 'dd/mm/yyyy',
+             toolbarCloseText: 'Selesai',
+             on: {
+               change: function (c, values) {
+                 // Batasi jumlah pilihan sesuai durasi
+                 if (values.length > maxDates) {
+                   // Hapus pilihan terakhir jika melebihi durasi
+                   values.pop(); 
+                   c.setValue(values);
+                   app.toast.create({text: `Maksimal ${maxDates} hari sesuai durasi!`, closeTimeout: 1000, position:'center'}).open();
+                 }
+                 
+                 // Update text summary
+                 if (values.length > 0) {
+                    summaryDiv.innerHTML = `Tanggal dipilih: <br><strong>${values.map(d => d.getDate() + '/' + (d.getMonth()+1)).join(', ')}</strong>`;
+                 }
+               }
+             }
+           });
+        }
+
+        // Event Listeners
+        radios.forEach(r => r.addEventListener('change', updateMode));
+        durationInput.addEventListener('change', updateMode); // Jika durasi berubah, reset mode
+        startInput.addEventListener('change', updateSummaryConsecutive);
+
+        // Jalankan sekali saat buka
+        updateMode();
+      }
+    }
+  });
+
+  dialog.open();
+}
 });
+
 
 document.getElementById('btn-dispen').addEventListener('click', function() {
-  showFormDialog('Surat Dispensasi', 
-    'Form untuk mengajukan surat dispensasi karena sakit, acara kampus, atau keperluan lainnya.');
+  showDispenForm(); 
+  function showDispenForm() {
+  app.dialog.create({
+    title: 'Form Pengajuan Dispensasi',
+    cssClass: 'dispen-form-dialog',
+    content: `
+      <div class="dialog-form">
+        <div class="list no-hairlines-md">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Kegiatan</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="dispen-kegiatan" placeholder="Contoh: Lomba Hackathon">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Ormawa/Himpunan</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="dispen-ormawa" placeholder="Contoh: HMIF">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Durasi Izin (Hari)</div>
+                <div class="item-input-wrap">
+                  <select id="dispen-durasi">
+                    <option value="1" selected>1 Hari</option>
+                    <option value="2">2 Hari</option>
+                    <option value="3">3 Hari</option>
+                    <option value="4">4 Hari</option>
+                    <option value="5">5 Hari</option>
+                    <option value="6">6 Hari</option>
+                    <option value="7">7 Hari</option>
+                  </select>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Mode Tanggal</div>
+                <div class="item-input-wrap" style="display: flex; gap: 15px; margin-top: 5px;">
+                   <label class="radio"><input type="radio" name="dispen-date-mode" value="consecutive" checked><i class="icon-radio"></i> Berurutan</label>
+                   <label class="radio"><input type="radio" name="dispen-date-mode" value="random"><i class="icon-radio"></i> Acak / Terpisah</label>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input" id="dispen-wrap-consecutive">
+              <div class="item-inner">
+                <div class="item-title item-label">Tanggal Mulai</div>
+                <div class="item-input-wrap">
+                  <input type="date" id="dispen-tanggal-mulai">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input" id="dispen-wrap-random" style="display:none;">
+              <div class="item-inner">
+                <div class="item-title item-label">Pilih Tanggal (<span id="dispen-count-needed">1</span> hari)</div>
+                <div class="item-input-wrap">
+                  <input 
+                    type="text" 
+                    placeholder="Klik untuk pilih tanggal..." 
+                    readonly 
+                    id="dispen-calendar-random"
+                    style="padding-right: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;"
+                  >
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content">
+              <div class="item-inner">
+                <div id="dispen-date-summary" style="font-size: 12px; color: #666; background: #f4f4f4; padding: 8px; border-radius: 6px; width: 100%;">
+                  <i class="f7-icons" style="font-size: 14px; vertical-align: middle;">info_circle</i> 
+                  Atur durasi dan pilih tanggal izin.
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Mata Kuliah</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="dispen-matkul" placeholder="Contoh: Algoritma">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Dosen Pengampu</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="dispen-dosen" placeholder="Contoh: Bpk. Budi">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Lampiran Surat</div>
+                <div class="item-input-wrap">
+                  <input type="file" id="dispen-file" accept=".pdf,.jpg,.png">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Catatan (Opsional)</div>
+                <div class="item-input-wrap">
+                  <textarea id="dispen-catatan"></textarea>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    `,
+    buttons: [
+      { text: 'Batal', close: true },
+      {
+        text: 'Ajukan',
+        bold: true,
+        onClick: function() {
+          // --- VALIDASI INPUT ---
+          const kegiatan = document.getElementById('dispen-kegiatan').value;
+          const ormawa = document.getElementById('dispen-ormawa').value;
+          const matkul = document.getElementById('dispen-matkul').value;
+          const dosen = document.getElementById('dispen-dosen').value;
+          
+          // Validasi Tanggal
+          const mode = document.querySelector('input[name="dispen-date-mode"]:checked').value;
+          const durasi = parseInt(document.getElementById('dispen-durasi').value);
+          let isDateValid = false;
+
+          if (mode === 'consecutive') {
+             if(document.getElementById('dispen-tanggal-mulai').value) isDateValid = true;
+          } else {
+             const calInput = document.getElementById('dispen-calendar-random').value;
+             if(calInput) {
+                const count = calInput.split(',').length;
+                if(count === durasi) isDateValid = true;
+                else {
+                  app.toast.create({ text: `Durasi ${durasi} hari, tapi Anda memilih ${count} tanggal.`, position: 'center', closeTimeout: 2500 }).open();
+                  return false;
+                }
+             }
+          }
+
+          if (!kegiatan || !ormawa || !matkul || !dosen || !isDateValid) {
+            app.toast.create({
+              text: 'Mohon lengkapi semua data & tanggal sesuai durasi!',
+              position: 'center',
+              closeTimeout: 1500,
+            }).open();
+            return false;
+          }
+
+          app.toast.create({
+            text: 'Surat dispensasi berhasil diajukan!',
+            position: 'center',
+            closeTimeout: 2000,
+          }).open();
+        }
+      }
+    ],
+    // --- LOGIKA TANGGAL (SAMA PERSIS DENGAN PEMINJAMAN RUANGAN) ---
+    on: {
+      opened: function () {
+        const durationInput = document.getElementById('dispen-durasi');
+        const startInput = document.getElementById('dispen-tanggal-mulai');
+        const randomInput = document.getElementById('dispen-calendar-random');
+        const summaryDiv = document.getElementById('dispen-date-summary');
+        const wrapConsecutive = document.getElementById('dispen-wrap-consecutive');
+        const wrapRandom = document.getElementById('dispen-wrap-random');
+        const radios = document.querySelectorAll('input[name="dispen-date-mode"]');
+        const labelCountNeeded = document.getElementById('dispen-count-needed');
+
+        let calendarDispenRandom;
+
+        function updateMode() {
+          const mode = document.querySelector('input[name="dispen-date-mode"]:checked').value;
+          const durasi = parseInt(durationInput.value);
+          
+          if (mode === 'consecutive') {
+            wrapConsecutive.style.display = 'flex';
+            wrapRandom.style.display = 'none';
+            updateSummaryConsecutive();
+          } else {
+            wrapConsecutive.style.display = 'none';
+            wrapRandom.style.display = 'flex';
+            labelCountNeeded.innerText = durasi;
+            
+            if (calendarDispenRandom) calendarDispenRandom.destroy();
+            initDispenRandomCalendar(durasi);
+            randomInput.value = ''; 
+            summaryDiv.innerHTML = `Silakan pilih <strong>${durasi} tanggal</strong> berbeda di kalender.`;
+          }
+        }
+
+        function updateSummaryConsecutive() {
+           if (startInput.value) {
+            const startDate = new Date(startInput.value);
+            const durasi = parseInt(durationInput.value);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + (durasi - 1));
+            
+            const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            
+            if(durasi === 1) {
+               summaryDiv.innerHTML = `Tanggal Izin: <strong>${format(startDate)}</strong>`;
+            } else {
+               summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong> (Berurutan)`;
+            }
+            summaryDiv.style.background = "#e7f1ff";
+           }
+        }
+
+        function initDispenRandomCalendar(maxDates) {
+           calendarDispenRandom = app.calendar.create({
+             inputEl: '#dispen-calendar-random',
+             openIn: 'customModal',
+             header: true,
+             footer: true,
+             multiple: true,
+             dateFormat: 'dd/mm/yyyy',
+             toolbarCloseText: 'Selesai',
+             
+             // FORMAT TAMPILAN PENDEK AGAR RAPI
+             formatValue: function (p, values) {
+                return values.map(function (d) {
+                   return d.getDate() + ' ' + d.toLocaleDateString('id-ID', { month: 'short' });
+                }).join(', ');
+             },
+
+             on: {
+               change: function (c, values) {
+                 if (values.length > maxDates) {
+                   values.pop(); 
+                   c.setValue(values);
+                   app.toast.create({text: `Maksimal ${maxDates} hari sesuai durasi!`, closeTimeout: 1000, position:'center'}).open();
+                 }
+                 
+                 if (values.length > 0) {
+                    const fullDates = values.map(d => d.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})).join('<br>');
+                    summaryDiv.innerHTML = `Tanggal Izin:<br><strong>${fullDates}</strong>`;
+                 } else {
+                    summaryDiv.innerHTML = `Silakan pilih <strong>${maxDates} tanggal</strong> berbeda.`;
+                 }
+               }
+             }
+           });
+        }
+
+        radios.forEach(r => r.addEventListener('change', updateMode));
+        durationInput.addEventListener('change', updateMode);
+        startInput.addEventListener('change', updateSummaryConsecutive);
+
+        updateMode();
+      }
+    }
+  }).open();
+}
 });
 
+// Event Handler untuk Tombol "Peminjaman Peralatan"
 document.getElementById('btn-item').addEventListener('click', function() {
-  showFormDialog('Peminjaman Peralatan', 
-    'Form untuk meminjam peralatan seperti proyektor, sound system, atau kamera.');
+  console.log('Tombol Peralatan Diklik!'); // Cek console untuk memastikan tombol jalan
+  showItemBookingForm(); 
+  function showItemBookingForm() {
+  // Daftar Barang (Bisa disesuaikan)
+  const itemOptions = `
+    <option value="Proyektor Epson">Proyektor Epson</option>
+    <option value="Layar Tripod">Layar Tripod</option>
+    <option value="Kamera DSLR Canon">Kamera DSLR Canon</option>
+    <option value="Sound System Portable">Sound System Portable</option>
+    <option value="Mic Wireless">Mic Wireless</option>
+    <option value="Kabel HDMI Panjang">Kabel HDMI (10m)</option>
+    <option value="Terminal Listrik">Terminal Listrik / Cok Sambung</option>
+  `;
+
+  app.dialog.create({
+    title: 'Peminjaman Peralatan',
+    cssClass: 'item-booking-dialog',
+    content: `
+      <div class="dialog-form">
+        <div class="list no-hairlines-md">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Kegiatan</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="item-kegiatan" placeholder="Contoh: Seminar Nasional">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Ormawa/Himpunan</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="item-ormawa" placeholder="Contoh: BEM Fasilkom">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Barang</div>
+                <div class="item-input-wrap">
+                  <select id="item-barang">
+                    ${itemOptions}
+                  </select>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Jumlah</div>
+                <div class="item-input-wrap">
+                  <input type="number" id="item-jumlah" value="1" min="1" placeholder="Qty">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Durasi Pinjam (Hari)</div>
+                <div class="item-input-wrap">
+                  <select id="item-durasi">
+                    <option value="1" selected>1 Hari</option>
+                    <option value="2">2 Hari</option>
+                    <option value="3">3 Hari</option>
+                    <option value="4">4 Hari</option>
+                    <option value="5">5 Hari</option>
+                    <option value="6">6 Hari</option>
+                    <option value="7">7 Hari</option>
+                  </select>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Mode Tanggal</div>
+                <div class="item-input-wrap" style="display: flex; gap: 15px; margin-top: 5px;">
+                   <label class="radio"><input type="radio" name="item-date-mode" value="consecutive" checked><i class="icon-radio"></i> Berurutan</label>
+                   <label class="radio"><input type="radio" name="item-date-mode" value="random"><i class="icon-radio"></i> Acak / Terpisah</label>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input" id="item-wrap-consecutive">
+              <div class="item-inner">
+                <div class="item-title item-label">Tanggal Mulai</div>
+                <div class="item-input-wrap">
+                  <input type="date" id="item-tanggal-mulai">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input" id="item-wrap-random" style="display:none;">
+              <div class="item-inner">
+                <div class="item-title item-label">Pilih Tanggal (<span id="item-count-needed">1</span> hari)</div>
+                <div class="item-input-wrap">
+                  <input 
+                    type="text" 
+                    placeholder="Klik untuk pilih tanggal..." 
+                    readonly 
+                    id="item-calendar-random"
+                    style="padding-right: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;"
+                  >
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content">
+              <div class="item-inner">
+                <div id="item-date-summary" style="font-size: 12px; color: #666; background: #f4f4f4; padding: 8px; border-radius: 6px; width: 100%;">
+                  <i class="f7-icons" style="font-size: 14px; vertical-align: middle;">info_circle</i> 
+                  Atur durasi dan pilih tanggal peminjaman.
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Lampiran Surat Peminjaman</div>
+                <div class="item-input-wrap">
+                  <input type="file" id="item-file" accept=".pdf,.jpg,.png">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Catatan (Opsional)</div>
+                <div class="item-input-wrap">
+                  <textarea id="item-catatan" placeholder="Contoh: Butuh kabel perpanjangan tambahan"></textarea>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    `,
+    buttons: [
+      { text: 'Batal', close: true },
+      {
+        text: 'Ajukan',
+        bold: true,
+        onClick: function() {
+          // --- VALIDASI INPUT ---
+          const kegiatan = document.getElementById('item-kegiatan').value;
+          const ormawa = document.getElementById('item-ormawa').value;
+          const barang = document.getElementById('item-barang').value;
+          const jumlah = document.getElementById('item-jumlah').value;
+          
+          // Validasi Tanggal
+          const mode = document.querySelector('input[name="item-date-mode"]:checked').value;
+          const durasi = parseInt(document.getElementById('item-durasi').value);
+          let isDateValid = false;
+
+          if (mode === 'consecutive') {
+             if(document.getElementById('item-tanggal-mulai').value) isDateValid = true;
+          } else {
+             const calInput = document.getElementById('item-calendar-random').value;
+             if(calInput) {
+                const count = calInput.split(',').length;
+                if(count === durasi) isDateValid = true;
+                else {
+                  app.toast.create({ text: `Durasi ${durasi} hari, pilih ${durasi} tanggal!`, position: 'center', closeTimeout: 2000 }).open();
+                  return false;
+                }
+             }
+          }
+
+          if (!kegiatan || !ormawa || !barang || !jumlah || !isDateValid) {
+            app.toast.create({
+              text: 'Mohon lengkapi semua data wajib!',
+              position: 'center',
+              closeTimeout: 1500,
+            }).open();
+            return false;
+          }
+
+          app.toast.create({
+            text: `Peminjaman ${jumlah} unit ${barang} berhasil diajukan!`,
+            position: 'center',
+            closeTimeout: 2500,
+          }).open();
+        }
+      }
+    ],
+    // --- LOGIKA TANGGAL ---
+    on: {
+      opened: function () {
+        const durationInput = document.getElementById('item-durasi');
+        const startInput = document.getElementById('item-tanggal-mulai');
+        const randomInput = document.getElementById('item-calendar-random');
+        const summaryDiv = document.getElementById('item-date-summary');
+        const wrapConsecutive = document.getElementById('item-wrap-consecutive');
+        const wrapRandom = document.getElementById('item-wrap-random');
+        const radios = document.querySelectorAll('input[name="item-date-mode"]');
+        const labelCountNeeded = document.getElementById('item-count-needed');
+
+        let calendarItemRandom;
+
+        function updateMode() {
+          const mode = document.querySelector('input[name="item-date-mode"]:checked').value;
+          const durasi = parseInt(durationInput.value);
+          
+          if (mode === 'consecutive') {
+            wrapConsecutive.style.display = 'flex';
+            wrapRandom.style.display = 'none';
+            updateSummaryConsecutive();
+          } else {
+            wrapConsecutive.style.display = 'none';
+            wrapRandom.style.display = 'flex';
+            labelCountNeeded.innerText = durasi;
+            
+            if (calendarItemRandom) calendarItemRandom.destroy();
+            initItemRandomCalendar(durasi);
+            randomInput.value = ''; 
+            summaryDiv.innerHTML = `Silakan pilih <strong>${durasi} tanggal</strong>.`;
+          }
+        }
+
+        function updateSummaryConsecutive() {
+           if (startInput.value) {
+            const startDate = new Date(startInput.value);
+            const durasi = parseInt(durationInput.value);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + (durasi - 1));
+            
+            const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            
+            if(durasi === 1) {
+               summaryDiv.innerHTML = `Dipinjam tanggal: <strong>${format(startDate)}</strong>`;
+            } else {
+               summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong>`;
+            }
+            summaryDiv.style.background = "#e7f1ff";
+           }
+        }
+
+        function initItemRandomCalendar(maxDates) {
+           calendarItemRandom = app.calendar.create({
+             inputEl: '#item-calendar-random',
+             openIn: 'customModal',
+             header: true,
+             footer: true,
+             multiple: true,
+             dateFormat: 'dd/mm/yyyy',
+             toolbarCloseText: 'Selesai',
+             formatValue: function (p, values) {
+                return values.map(function (d) {
+                   return d.getDate() + ' ' + d.toLocaleDateString('id-ID', { month: 'short' });
+                }).join(', ');
+             },
+             on: {
+               change: function (c, values) {
+                 if (values.length > maxDates) {
+                   values.pop(); 
+                   c.setValue(values);
+                   app.toast.create({text: `Maksimal ${maxDates} hari!`, closeTimeout: 1000, position:'center'}).open();
+                 }
+                 if (values.length > 0) {
+                    const fullDates = values.map(d => d.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})).join('<br>');
+                    summaryDiv.innerHTML = `Tanggal Dipilih:<br><strong>${fullDates}</strong>`;
+                 } else {
+                    summaryDiv.innerHTML = `Silakan pilih <strong>${maxDates} tanggal</strong> berbeda.`;
+                 }
+               }
+             }
+           });
+        }
+
+        radios.forEach(r => r.addEventListener('change', updateMode));
+        durationInput.addEventListener('change', updateMode);
+        startInput.addEventListener('change', updateSummaryConsecutive);
+
+        updateMode();
+      }
+    }
+  }).open();
+}function showItemBookingForm() {
+  // Daftar Barang (Bisa disesuaikan)
+  const itemOptions = `
+    <option value="Proyektor Epson">Proyektor Epson</option>
+    <option value="Layar Tripod">Layar Tripod</option>
+    <option value="Kamera DSLR Canon">Kamera DSLR Canon</option>
+    <option value="Sound System Portable">Sound System Portable</option>
+    <option value="Mic Wireless">Mic Wireless</option>
+    <option value="Kabel HDMI Panjang">Kabel HDMI (10m)</option>
+    <option value="Terminal Listrik">Terminal Listrik / Cok Sambung</option>
+  `;
+
+  app.dialog.create({
+    title: 'Peminjaman Peralatan',
+    cssClass: 'item-booking-dialog',
+    content: `
+      <div class="dialog-form">
+        <div class="list no-hairlines-md">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Kegiatan</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="item-kegiatan" placeholder="Contoh: Seminar Nasional">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Ormawa/Himpunan</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="item-ormawa" placeholder="Contoh: BEM Fasilkom">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Nama Barang</div>
+                <div class="item-input-wrap">
+                  <select id="item-barang">
+                    ${itemOptions}
+                  </select>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Jumlah</div>
+                <div class="item-input-wrap">
+                  <input type="number" id="item-jumlah" value="1" min="1" placeholder="Qty">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Durasi Pinjam (Hari)</div>
+                <div class="item-input-wrap">
+                  <select id="item-durasi">
+                    <option value="1" selected>1 Hari</option>
+                    <option value="2">2 Hari</option>
+                    <option value="3">3 Hari</option>
+                    <option value="4">4 Hari</option>
+                    <option value="5">5 Hari</option>
+                    <option value="6">6 Hari</option>
+                    <option value="7">7 Hari</option>
+                  </select>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Mode Tanggal</div>
+                <div class="item-input-wrap" style="display: flex; gap: 15px; margin-top: 5px;">
+                   <label class="radio"><input type="radio" name="item-date-mode" value="consecutive" checked><i class="icon-radio"></i> Berurutan</label>
+                   <label class="radio"><input type="radio" name="item-date-mode" value="random"><i class="icon-radio"></i> Acak / Terpisah</label>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input" id="item-wrap-consecutive">
+              <div class="item-inner">
+                <div class="item-title item-label">Tanggal Mulai</div>
+                <div class="item-input-wrap">
+                  <input type="date" id="item-tanggal-mulai">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input" id="item-wrap-random" style="display:none;">
+              <div class="item-inner">
+                <div class="item-title item-label">Pilih Tanggal (<span id="item-count-needed">1</span> hari)</div>
+                <div class="item-input-wrap">
+                  <input 
+                    type="text" 
+                    placeholder="Klik untuk pilih tanggal..." 
+                    readonly 
+                    id="item-calendar-random"
+                    style="padding-right: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;"
+                  >
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content">
+              <div class="item-inner">
+                <div id="item-date-summary" style="font-size: 12px; color: #666; background: #f4f4f4; padding: 8px; border-radius: 6px; width: 100%;">
+                  <i class="f7-icons" style="font-size: 14px; vertical-align: middle;">info_circle</i> 
+                  Atur durasi dan pilih tanggal peminjaman.
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Lampiran Surat Peminjaman</div>
+                <div class="item-input-wrap">
+                  <input type="file" id="item-file" accept=".pdf,.jpg,.png">
+                </div>
+              </div>
+            </li>
+
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Catatan (Opsional)</div>
+                <div class="item-input-wrap">
+                  <textarea id="item-catatan" placeholder="Contoh: Butuh kabel perpanjangan tambahan"></textarea>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    `,
+    buttons: [
+      { text: 'Batal', close: true },
+      {
+        text: 'Ajukan',
+        bold: true,
+        onClick: function() {
+          // --- VALIDASI INPUT ---
+          const kegiatan = document.getElementById('item-kegiatan').value;
+          const ormawa = document.getElementById('item-ormawa').value;
+          const barang = document.getElementById('item-barang').value;
+          const jumlah = document.getElementById('item-jumlah').value;
+          
+          // Validasi Tanggal
+          const mode = document.querySelector('input[name="item-date-mode"]:checked').value;
+          const durasi = parseInt(document.getElementById('item-durasi').value);
+          let isDateValid = false;
+
+          if (mode === 'consecutive') {
+             if(document.getElementById('item-tanggal-mulai').value) isDateValid = true;
+          } else {
+             const calInput = document.getElementById('item-calendar-random').value;
+             if(calInput) {
+                const count = calInput.split(',').length;
+                if(count === durasi) isDateValid = true;
+                else {
+                  app.toast.create({ text: `Durasi ${durasi} hari, pilih ${durasi} tanggal!`, position: 'center', closeTimeout: 2000 }).open();
+                  return false;
+                }
+             }
+          }
+
+          if (!kegiatan || !ormawa || !barang || !jumlah || !isDateValid) {
+            app.toast.create({
+              text: 'Mohon lengkapi semua data wajib!',
+              position: 'center',
+              closeTimeout: 1500,
+            }).open();
+            return false;
+          }
+
+          app.toast.create({
+            text: `Peminjaman ${jumlah} unit ${barang} berhasil diajukan!`,
+            position: 'center',
+            closeTimeout: 2500,
+          }).open();
+        }
+      }
+    ],
+    // --- LOGIKA TANGGAL ---
+    on: {
+      opened: function () {
+        const durationInput = document.getElementById('item-durasi');
+        const startInput = document.getElementById('item-tanggal-mulai');
+        const randomInput = document.getElementById('item-calendar-random');
+        const summaryDiv = document.getElementById('item-date-summary');
+        const wrapConsecutive = document.getElementById('item-wrap-consecutive');
+        const wrapRandom = document.getElementById('item-wrap-random');
+        const radios = document.querySelectorAll('input[name="item-date-mode"]');
+        const labelCountNeeded = document.getElementById('item-count-needed');
+
+        let calendarItemRandom;
+
+        function updateMode() {
+          const mode = document.querySelector('input[name="item-date-mode"]:checked').value;
+          const durasi = parseInt(durationInput.value);
+          
+          if (mode === 'consecutive') {
+            wrapConsecutive.style.display = 'flex';
+            wrapRandom.style.display = 'none';
+            updateSummaryConsecutive();
+          } else {
+            wrapConsecutive.style.display = 'none';
+            wrapRandom.style.display = 'flex';
+            labelCountNeeded.innerText = durasi;
+            
+            if (calendarItemRandom) calendarItemRandom.destroy();
+            initItemRandomCalendar(durasi);
+            randomInput.value = ''; 
+            summaryDiv.innerHTML = `Silakan pilih <strong>${durasi} tanggal</strong>.`;
+          }
+        }
+
+        function updateSummaryConsecutive() {
+           if (startInput.value) {
+            const startDate = new Date(startInput.value);
+            const durasi = parseInt(durationInput.value);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + (durasi - 1));
+            
+            const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            
+            if(durasi === 1) {
+               summaryDiv.innerHTML = `Dipinjam tanggal: <strong>${format(startDate)}</strong>`;
+            } else {
+               summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong>`;
+            }
+            summaryDiv.style.background = "#e7f1ff";
+           }
+        }
+
+        function initItemRandomCalendar(maxDates) {
+           calendarItemRandom = app.calendar.create({
+             inputEl: '#item-calendar-random',
+             openIn: 'customModal',
+             header: true,
+             footer: true,
+             multiple: true,
+             dateFormat: 'dd/mm/yyyy',
+             toolbarCloseText: 'Selesai',
+             formatValue: function (p, values) {
+                return values.map(function (d) {
+                   return d.getDate() + ' ' + d.toLocaleDateString('id-ID', { month: 'short' });
+                }).join(', ');
+             },
+             on: {
+               change: function (c, values) {
+                 if (values.length > maxDates) {
+                   values.pop(); 
+                   c.setValue(values);
+                   app.toast.create({text: `Maksimal ${maxDates} hari!`, closeTimeout: 1000, position:'center'}).open();
+                 }
+                 if (values.length > 0) {
+                    const fullDates = values.map(d => d.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})).join('<br>');
+                    summaryDiv.innerHTML = `Tanggal Dipilih:<br><strong>${fullDates}</strong>`;
+                 } else {
+                    summaryDiv.innerHTML = `Silakan pilih <strong>${maxDates} tanggal</strong> berbeda.`;
+                 }
+               }
+             }
+           });
+        }
+
+        radios.forEach(r => r.addEventListener('change', updateMode));
+        durationInput.addEventListener('change', updateMode);
+        startInput.addEventListener('change', updateSummaryConsecutive);
+
+        updateMode();
+      }
+    }
+  }).open();
+}
 });
 
 //lili
@@ -283,6 +1383,7 @@ function showFormDialog(title, description) {
                 <div class="item-input-wrap">
                   <input type="date" placeholder="Pilih tanggal">
                 </div>
+
               </div>
             </li>
           </ul>
@@ -569,3 +1670,137 @@ document.getElementById('btn-back-history').addEventListener('click', function(e
 
 // Inisialisasi halaman history saat pertama kali tampil (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
 // initHistoryPage(); // This will be called when showHistoryPage is invoked
+
+// ============================================
+// PROFILE PAGE HANDLERS
+// ============================================
+
+/**
+ * Handler untuk tombol Keluar (Logout)
+ */
+function handleLogout(event) {
+  event.preventDefault();
+  
+  app.dialog.create({
+    title: 'Konfirmasi Keluar',
+    text: 'Apakah Anda yakin ingin keluar dari aplikasi?',
+    buttons: [
+      {
+        text: 'Batal',
+        onClick: function() {}
+      },
+      {
+        text: 'Keluar',
+        onClick: function() {
+          // Hapus session/login data
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('userData');
+          
+          // Tampilkan toast notifikasi
+          app.toast.create({
+            text: 'Anda telah berhasil keluar',
+            position: 'center',
+            closeTimeout: 1500
+          }).open();
+          
+          // Redirect ke halaman login setelah 1 detik
+          setTimeout(function() {
+            window.location.href = './pages/auth.html';
+          }, 1500);
+        }
+      }
+    ]
+  }).open();
+}
+
+/**
+ * Handler untuk ubah kata sandi
+ */
+function handleChangePassword(event) {
+  event.preventDefault();
+  
+  app.dialog.create({
+    title: 'Ubah Kata Sandi',
+    content: `
+      <div class="dialog-form">
+        <div class="list no-hairlines-md">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Kata Sandi Lama</div>
+                <div class="item-input-wrap">
+                  <input type="password" id="old-password" placeholder="Masukkan kata sandi lama">
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Kata Sandi Baru</div>
+                <div class="item-input-wrap">
+                  <input type="password" id="new-password" placeholder="Masukkan kata sandi baru">
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Konfirmasi Kata Sandi Baru</div>
+                <div class="item-input-wrap">
+                  <input type="password" id="confirm-password" placeholder="Konfirmasi kata sandi baru">
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    `,
+    buttons: [
+      {
+        text: 'Batal',
+        onClick: function() {}
+      },
+      {
+        text: 'Simpan',
+        onClick: function() {
+          const oldPass = document.getElementById('old-password').value;
+          const newPass = document.getElementById('new-password').value;
+          const confirmPass = document.getElementById('confirm-password').value;
+          
+          // Validasi
+          if (!oldPass || !newPass || !confirmPass) {
+            app.toast.create({
+              text: 'Semua field harus diisi',
+              position: 'center',
+              closeTimeout: 2000
+            }).open();
+            return;
+          }
+          
+          if (newPass !== confirmPass) {
+            app.toast.create({
+              text: 'Kata sandi baru tidak cocok',
+              position: 'center',
+              closeTimeout: 2000
+            }).open();
+            return;
+          }
+          
+          if (newPass.length < 6) {
+            app.toast.create({
+              text: 'Kata sandi minimal 6 karakter',
+              position: 'center',
+              closeTimeout: 2000
+            }).open();
+            return;
+          }
+          
+          // Simulasi update password (sesuaikan dengan API Anda)
+          app.toast.create({
+            text: 'Kata sandi berhasil diubah',
+            position: 'center',
+            closeTimeout: 2000
+          }).open();
+        }
+      }
+    ]
+  }).open();
+}
