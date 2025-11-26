@@ -22,10 +22,10 @@ var routes = [
   },
   {
     path: '/',
-    url: '/pages/auth.html'
+    url: '/index.html'
   },
   {
-    path: '/',
+    path: '/home/',
     url: '/index.html'
   }
 ];

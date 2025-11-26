@@ -1,4 +1,4 @@
-<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../my-app.css">
 <div class="auth-container">
   <div class="auth-wrapper">
@@ -21,7 +21,7 @@
           <label for="login-password">Password</label>
           <input type="password" id="login-password" name="password" placeholder="Masukkan password" required>
         </div>
-        <button type="submit" class="btn-primary" onclick="window.location.href='../index.html'">Masuk</button>
+        <button type="submit" class="btn-primary">Masuk</button>
 
       </form>
       <!-- <p class="auth-footer">Belum punya akun? <a href="#" onclick="toggleAuthForm(event)">Daftar di sini</a></p> -->
@@ -57,14 +57,30 @@
     </div> -->
   </div>
 </div>
+<!-- Script untuk API Autentikasi -->
+<!-- TAMBAHKAN LINE INI SEBELUM auth.js -->
+<script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+<script src="../js/api/auth.js"></script>
 <script>
-function handleLogin(event) {
+// Pastikan objek 'app' Framework7 tersedia sebelum memanggil toast
+// Ini penting jika pages/auth.html dimuat sebagai halaman mandiri tanpa inisialisasi F7 penuh
+// Untuk development/testing, bisa ditambahkan inisialisasi F7 minimal jika diperlukan:
+// var app = new Framework7(); 
+// window.app = app; 
+
+async function handleLogin(event) {
     event.preventDefault();
 
-    // Simpan status login
-    localStorage.setItem("isLoggedIn", "true");
+    const emailInput = document.getElementById('login-email');
+    const passwordInput = document.getElementById('login-password');
 
-    // Arahkan ke index
-    window.location.href = "../index.html";
+    const email = emailInput.value;
+    const password = passwordInput.value;
+
+    // Panggil fungsi loginUser dari js/api/auth.js
+    const success = await loginUser(email, password);
+
+    // loginUser akan menangani toast dan navigasi
+    // Anda bisa menambahkan logika tambahan di sini jika diperlukan setelah loginUser selesai
 }
 </script>
