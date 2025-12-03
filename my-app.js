@@ -19,6 +19,58 @@ var app = new Framework7({
 });
 window.app = app;
 
+/**
+ * Safe attach helper: if element exists attach listener, otherwise observe DOM
+ * and attach when element is added. Disconnects observer after attaching.
+ */
+function observeAndAttach(selectorOrId, eventName, handler) {
+  try {
+    const attach = (el) => {
+      if (!el) return false;
+      el.addEventListener(eventName, handler);
+      return true;
+    };
+
+    // Accept both id string (#id or id) or selector
+    let el = null;
+    if (selectorOrId.startsWith('#')) el = document.getElementById(selectorOrId.slice(1));
+    else el = document.getElementById(selectorOrId) || document.querySelector(selectorOrId);
+
+    if (attach(el)) return;
+
+    const observer = new MutationObserver((mutations, obs) => {
+      let found = null;
+      if (selectorOrId.startsWith('#')) found = document.getElementById(selectorOrId.slice(1));
+      else found = document.getElementById(selectorOrId) || document.querySelector(selectorOrId);
+      if (found) {
+        attach(found);
+        obs.disconnect();
+      }
+    });
+    observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
+  } catch (err) {
+    console.error('[my-app.js] observeAndAttach error:', err);
+  }
+}
+
+// Safe dialog cleanup: ensures dialogs are properly closed and removed from DOM
+function closeAndCleanupDialog(dialog) {
+  if (!dialog) return;
+  try {
+    if (typeof dialog.close === 'function') {
+      dialog.close();
+    }
+    // Allow Framework7 to remove the DOM element (async)
+    setTimeout(function() {
+      if (typeof dialog.destroy === 'function') {
+        dialog.destroy();
+      }
+    }, 300);
+  } catch (err) {
+    console.error('[my-app.js] closeAndCleanupDialog error:', err);
+  }
+}
+
 // Global mock data for bookings (from HEAD)
 app.mockBookings = [
   { id: 1, borrowerName: 'Ahmad Fauzi', item: 'Ruang Rapat A', type: 'Ruangan', status: 'Sudah dikembalikan', date: new Date(2025,10,15), startTime: '09:00', endTime: '11:00' },
@@ -129,6 +181,25 @@ var allHistoryData = [
 
 var mainView = app.views.create('.view-main');
 
+// Ensure 'Lihat Semua Riwayat' always navigates correctly (safe handler)
+(function attachAllHistoryHandler(){
+  try {
+    const btnAll = document.getElementById('btn-all-history');
+    if (!btnAll) return;
+    btnAll.addEventListener('click', function(e) {
+      // Prevent default anchor behavior and use Framework7 router for SPA navigation
+      e.preventDefault();
+      if (mainView && mainView.router && typeof mainView.router.navigate === 'function') {
+        mainView.router.navigate('/history/');
+      } else {
+        // Fallback navigation
+        window.location.href = '/pages/history.html';
+      }
+    });
+  } catch (err) {
+    console.error('[my-app.js] Error attaching btn-all-history handler:', err);
+  }
+})();
 // Ensure calendar script is loaded and initialize calendar when calendar page opens
 app.on('pageAfterIn', function (page) {
   if (page.name === 'calendar') {
@@ -154,7 +225,7 @@ app.on('pageAfterIn', function (page) {
 });
 
 // Event handlers for menu cards (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-document.getElementById('btn-room').addEventListener('click', function() {
+observeAndAttach('btn-room', 'click', function() {
   showRoomBookingForm();
   function showRoomBookingForm() {
   // 1. Siapkan daftar ruangan (HTML Options)
@@ -362,95 +433,21 @@ document.addEventListener('DOMContentLoaded', function() {
     ],
     on: {
       opened: function () {
-        const durationInput = document.getElementById('input-durasi');
-        const startInput = document.getElementById('input-tanggal-mulai');
-        const randomInput = document.getElementById('input-calendar-random');
-        const summaryDiv = document.getElementById('date-summary');
-        const wrapConsecutive = document.getElementById('wrap-consecutive');
-        const wrapRandom = document.getElementById('wrap-random');
-        const radios = document.querySelectorAll('input[name="date-mode"]');
-        const labelCountNeeded = document.getElementById('count-needed');
-
-        // Variabel untuk menyimpan instance kalender F7
-        let calendarRandom;
-
-        // 1. Fungsi Update Tampilan (Berurutan vs Acak)
-        function updateMode() {
-          const mode = document.querySelector('input[name="date-mode"]:checked').value;
-          const durasi = parseInt(durationInput.value);
-          
-          if (mode === 'consecutive') {
-            wrapConsecutive.style.display = 'flex';
-            wrapRandom.style.display = 'none';
-            updateSummaryConsecutive();
-          } else {
-            wrapConsecutive.style.display = 'none';
-            wrapRandom.style.display = 'flex';
-            labelCountNeeded.innerText = durasi;
-            
-            // Reset dan inisialisasi kalender custom
-            if (calendarRandom) calendarRandom.destroy();
-            initRandomCalendar(durasi);
-            randomInput.value = ''; // Reset nilai
-            summaryDiv.innerHTML = `Silakan pilih <strong>${durasi} tanggal</strong> berbeda di kalender.`;
-          }
-        }
-
-        // 2. Logika Tanggal Berurutan
-        function updateSummaryConsecutive() {
-           if (startInput.value) {
-            const startDate = new Date(startInput.value);
-            const durasi = parseInt(durationInput.value);
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + (durasi - 1));
-            
-            const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-            
-            if(durasi === 1) {
-               summaryDiv.innerHTML = `Jadwal: <strong>${format(startDate)}</strong>`;
-            } else {
-               summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong> (Berurutan)`;
-            }
-            summaryDiv.style.background = "#e7f1ff";
-           }
-        }
-
-        // 3. Inisialisasi Kalender F7 (Multi-select)
-        function initRandomCalendar(maxDates) {
-           calendarRandom = app.calendar.create({
-             inputEl: '#input-calendar-random',
-             openIn: 'customModal',
-             header: true,
-             footer: true,
-             multiple: true, // KUNCI: Izinkan pilih banyak
-             dateFormat: 'dd/mm/yyyy',
-             toolbarCloseText: 'Selesai',
-             on: {
-               change: function (c, values) {
-                 // Batasi jumlah pilihan sesuai durasi
-                 if (values.length > maxDates) {
-                   // Hapus pilihan terakhir jika melebihi durasi
-                   values.pop(); 
-                   c.setValue(values);
-                   app.toast.create({text: `Maksimal ${maxDates} hari sesuai durasi!`, closeTimeout: 1000, position:'center'}).open();
-                 }
-                 
-                 // Update text summary
-                 if (values.length > 0) {
-                    summaryDiv.innerHTML = `Tanggal dipilih: <br><strong>${values.map(d => d.getDate() + '/' + (d.getMonth()+1)).join(', ')}</strong>`;
-                 }
-               }
-             }
-           });
-        }
-
-        // Event Listeners
-        radios.forEach(r => r.addEventListener('change', updateMode));
-        durationInput.addEventListener('change', updateMode); // Jika durasi berubah, reset mode
-        startInput.addEventListener('change', updateSummaryConsecutive);
-
-        // Jalankan sekali saat buka
-        updateMode();
+        initializeDateSelection({
+          durationEl: '#input-durasi',
+          startDateEl: '#input-tanggal-mulai',
+          randomDateEl: '#input-calendar-random',
+          summaryEl: '#date-summary',
+          consecutiveWrapEl: '#wrap-consecutive',
+          randomWrapEl: '#wrap-random',
+          dateModeName: 'date-mode',
+          countNeededEl: '#count-needed',
+          summaryTextConsecutive: 'Jadwal',
+          summaryTextRandom: 'Tanggal dipilih'
+        });
+      },
+      closed: function() {
+        closeAndCleanupDialog(dialog);
       }
     }
   });
@@ -460,10 +457,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-document.getElementById('btn-dispen').addEventListener('click', function() {
+observeAndAttach('btn-dispen', 'click', function() {
   showDispenForm(); 
   function showDispenForm() {
-  app.dialog.create({
+  var dispenDialog = app.dialog.create({
     title: 'Form Pengajuan Dispensasi',
     cssClass: 'dispen-form-dialog',
     content: `
@@ -639,96 +636,21 @@ document.getElementById('btn-dispen').addEventListener('click', function() {
     // --- LOGIKA TANGGAL (SAMA PERSIS DENGAN PEMINJAMAN RUANGAN) ---
     on: {
       opened: function () {
-        const durationInput = document.getElementById('dispen-durasi');
-        const startInput = document.getElementById('dispen-tanggal-mulai');
-        const randomInput = document.getElementById('dispen-calendar-random');
-        const summaryDiv = document.getElementById('dispen-date-summary');
-        const wrapConsecutive = document.getElementById('dispen-wrap-consecutive');
-        const wrapRandom = document.getElementById('dispen-wrap-random');
-        const radios = document.querySelectorAll('input[name="dispen-date-mode"]');
-        const labelCountNeeded = document.getElementById('dispen-count-needed');
-
-        let calendarDispenRandom;
-
-        function updateMode() {
-          const mode = document.querySelector('input[name="dispen-date-mode"]:checked').value;
-          const durasi = parseInt(durationInput.value);
-          
-          if (mode === 'consecutive') {
-            wrapConsecutive.style.display = 'flex';
-            wrapRandom.style.display = 'none';
-            updateSummaryConsecutive();
-          } else {
-            wrapConsecutive.style.display = 'none';
-            wrapRandom.style.display = 'flex';
-            labelCountNeeded.innerText = durasi;
-            
-            if (calendarDispenRandom) calendarDispenRandom.destroy();
-            initDispenRandomCalendar(durasi);
-            randomInput.value = ''; 
-            summaryDiv.innerHTML = `Silakan pilih <strong>${durasi} tanggal</strong> berbeda di kalender.`;
-          }
-        }
-
-        function updateSummaryConsecutive() {
-           if (startInput.value) {
-            const startDate = new Date(startInput.value);
-            const durasi = parseInt(durationInput.value);
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + (durasi - 1));
-            
-            const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-            
-            if(durasi === 1) {
-               summaryDiv.innerHTML = `Tanggal Izin: <strong>${format(startDate)}</strong>`;
-            } else {
-               summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong> (Berurutan)`;
-            }
-            summaryDiv.style.background = "#e7f1ff";
-           }
-        }
-
-        function initDispenRandomCalendar(maxDates) {
-           calendarDispenRandom = app.calendar.create({
-             inputEl: '#dispen-calendar-random',
-             openIn: 'customModal',
-             header: true,
-             footer: true,
-             multiple: true,
-             dateFormat: 'dd/mm/yyyy',
-             toolbarCloseText: 'Selesai',
-             
-             // FORMAT TAMPILAN PENDEK AGAR RAPI
-             formatValue: function (p, values) {
-                return values.map(function (d) {
-                   return d.getDate() + ' ' + d.toLocaleDateString('id-ID', { month: 'short' });
-                }).join(', ');
-             },
-
-             on: {
-               change: function (c, values) {
-                 if (values.length > maxDates) {
-                   values.pop(); 
-                   c.setValue(values);
-                   app.toast.create({text: `Maksimal ${maxDates} hari sesuai durasi!`, closeTimeout: 1000, position:'center'}).open();
-                 }
-                 
-                 if (values.length > 0) {
-                    const fullDates = values.map(d => d.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})).join('<br>');
-                    summaryDiv.innerHTML = `Tanggal Izin:<br><strong>${fullDates}</strong>`;
-                 } else {
-                    summaryDiv.innerHTML = `Silakan pilih <strong>${maxDates} tanggal</strong> berbeda.`;
-                 }
-               }
-             }
-           });
-        }
-
-        radios.forEach(r => r.addEventListener('change', updateMode));
-        durationInput.addEventListener('change', updateMode);
-        startInput.addEventListener('change', updateSummaryConsecutive);
-
-        updateMode();
+        initializeDateSelection({
+          durationEl: '#dispen-durasi',
+          startDateEl: '#dispen-tanggal-mulai',
+          randomDateEl: '#dispen-calendar-random',
+          summaryEl: '#dispen-date-summary',
+          consecutiveWrapEl: '#dispen-wrap-consecutive',
+          randomWrapEl: '#dispen-wrap-random',
+          dateModeName: 'dispen-date-mode',
+          countNeededEl: '#dispen-count-needed',
+          summaryTextConsecutive: 'Tanggal Izin',
+          summaryTextRandom: 'Tanggal Izin'
+        });
+      },
+      closed: function() {
+        closeAndCleanupDialog(dispenDialog);
       }
     }
   }).open();
@@ -736,7 +658,7 @@ document.getElementById('btn-dispen').addEventListener('click', function() {
 });
 
 // Event Handler untuk Tombol "Peminjaman Peralatan"
-document.getElementById('btn-item').addEventListener('click', function() {
+observeAndAttach('btn-item', 'click', function() {
   console.log('Tombol Peralatan Diklik!'); // Cek console untuk memastikan tombol jalan
   showItemBookingForm(); 
   function showItemBookingForm() {
@@ -751,7 +673,7 @@ document.getElementById('btn-item').addEventListener('click', function() {
     <option value="Terminal Listrik">Terminal Listrik / Cok Sambung</option>
   `;
 
-  app.dialog.create({
+  var itemDialog = app.dialog.create({
     title: 'Peminjaman Peralatan',
     cssClass: 'item-booking-dialog',
     content: `
@@ -929,380 +851,147 @@ document.getElementById('btn-item').addEventListener('click', function() {
     // --- LOGIKA TANGGAL ---
     on: {
       opened: function () {
-        const durationInput = document.getElementById('item-durasi');
-        const startInput = document.getElementById('item-tanggal-mulai');
-        const randomInput = document.getElementById('item-calendar-random');
-        const summaryDiv = document.getElementById('item-date-summary');
-        const wrapConsecutive = document.getElementById('item-wrap-consecutive');
-        const wrapRandom = document.getElementById('item-wrap-random');
-        const radios = document.querySelectorAll('input[name="item-date-mode"]');
-        const labelCountNeeded = document.getElementById('item-count-needed');
-
-        let calendarItemRandom;
-
-        function updateMode() {
-          const mode = document.querySelector('input[name="item-date-mode"]:checked').value;
-          const durasi = parseInt(durationInput.value);
-          
-          if (mode === 'consecutive') {
-            wrapConsecutive.style.display = 'flex';
-            wrapRandom.style.display = 'none';
-            updateSummaryConsecutive();
-          } else {
-            wrapConsecutive.style.display = 'none';
-            wrapRandom.style.display = 'flex';
-            labelCountNeeded.innerText = durasi;
-            
-            if (calendarItemRandom) calendarItemRandom.destroy();
-            initItemRandomCalendar(durasi);
-            randomInput.value = ''; 
-            summaryDiv.innerHTML = `Silakan pilih <strong>${durasi} tanggal</strong>.`;
-          }
-        }
-
-        function updateSummaryConsecutive() {
-           if (startInput.value) {
-            const startDate = new Date(startInput.value);
-            const durasi = parseInt(durationInput.value);
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + (durasi - 1));
-            
-            const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-            
-            if(durasi === 1) {
-               summaryDiv.innerHTML = `Dipinjam tanggal: <strong>${format(startDate)}</strong>`;
-            } else {
-               summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong>`;
-            }
-            summaryDiv.style.background = "#e7f1ff";
-           }
-        }
-
-        function initItemRandomCalendar(maxDates) {
-           calendarItemRandom = app.calendar.create({
-             inputEl: '#item-calendar-random',
-             openIn: 'customModal',
-             header: true,
-             footer: true,
-             multiple: true,
-             dateFormat: 'dd/mm/yyyy',
-             toolbarCloseText: 'Selesai',
-             formatValue: function (p, values) {
-                return values.map(function (d) {
-                   return d.getDate() + ' ' + d.toLocaleDateString('id-ID', { month: 'short' });
-                }).join(', ');
-             },
-             on: {
-               change: function (c, values) {
-                 if (values.length > maxDates) {
-                   values.pop(); 
-                   c.setValue(values);
-                   app.toast.create({text: `Maksimal ${maxDates} hari!`, closeTimeout: 1000, position:'center'}).open();
-                 }
-                 if (values.length > 0) {
-                    const fullDates = values.map(d => d.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})).join('<br>');
-                    summaryDiv.innerHTML = `Tanggal Dipilih:<br><strong>${fullDates}</strong>`;
-                 } else {
-                    summaryDiv.innerHTML = `Silakan pilih <strong>${maxDates} tanggal</strong> berbeda.`;
-                 }
-               }
-             }
-           });
-        }
-
-        radios.forEach(r => r.addEventListener('change', updateMode));
-        durationInput.addEventListener('change', updateMode);
-        startInput.addEventListener('change', updateSummaryConsecutive);
-
-        updateMode();
-      }
-    }
-  }).open();
-}function showItemBookingForm() {
-  // Daftar Barang (Bisa disesuaikan)
-  const itemOptions = `
-    <option value="Proyektor Epson">Proyektor Epson</option>
-    <option value="Layar Tripod">Layar Tripod</option>
-    <option value="Kamera DSLR Canon">Kamera DSLR Canon</option>
-    <option value="Sound System Portable">Sound System Portable</option>
-    <option value="Mic Wireless">Mic Wireless</option>
-    <option value="Kabel HDMI Panjang">Kabel HDMI (10m)</option>
-    <option value="Terminal Listrik">Terminal Listrik / Cok Sambung</option>
-  `;
-
-  app.dialog.create({
-    title: 'Peminjaman Peralatan',
-    cssClass: 'item-booking-dialog',
-    content: `
-      <div class="dialog-form">
-        <div class="list no-hairlines-md">
-          <ul>
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Nama Kegiatan</div>
-                <div class="item-input-wrap">
-                  <input type="text" id="item-kegiatan" placeholder="Contoh: Seminar Nasional">
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Nama Ormawa/Himpunan</div>
-                <div class="item-input-wrap">
-                  <input type="text" id="item-ormawa" placeholder="Contoh: BEM Fasilkom">
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Nama Barang</div>
-                <div class="item-input-wrap">
-                  <select id="item-barang">
-                    ${itemOptions}
-                  </select>
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Jumlah</div>
-                <div class="item-input-wrap">
-                  <input type="number" id="item-jumlah" value="1" min="1" placeholder="Qty">
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Durasi Pinjam (Hari)</div>
-                <div class="item-input-wrap">
-                  <select id="item-durasi">
-                    <option value="1" selected>1 Hari</option>
-                    <option value="2">2 Hari</option>
-                    <option value="3">3 Hari</option>
-                    <option value="4">4 Hari</option>
-                    <option value="5">5 Hari</option>
-                    <option value="6">6 Hari</option>
-                    <option value="7">7 Hari</option>
-                  </select>
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Mode Tanggal</div>
-                <div class="item-input-wrap" style="display: flex; gap: 15px; margin-top: 5px;">
-                   <label class="radio"><input type="radio" name="item-date-mode" value="consecutive" checked><i class="icon-radio"></i> Berurutan</label>
-                   <label class="radio"><input type="radio" name="item-date-mode" value="random"><i class="icon-radio"></i> Acak / Terpisah</label>
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input" id="item-wrap-consecutive">
-              <div class="item-inner">
-                <div class="item-title item-label">Tanggal Mulai</div>
-                <div class="item-input-wrap">
-                  <input type="date" id="item-tanggal-mulai">
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input" id="item-wrap-random" style="display:none;">
-              <div class="item-inner">
-                <div class="item-title item-label">Pilih Tanggal (<span id="item-count-needed">1</span> hari)</div>
-                <div class="item-input-wrap">
-                  <input 
-                    type="text" 
-                    placeholder="Klik untuk pilih tanggal..." 
-                    readonly 
-                    id="item-calendar-random"
-                    style="padding-right: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;"
-                  >
-                  <span class="input-clear-button"></span>
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content">
-              <div class="item-inner">
-                <div id="item-date-summary" style="font-size: 12px; color: #666; background: #f4f4f4; padding: 8px; border-radius: 6px; width: 100%;">
-                  <i class="f7-icons" style="font-size: 14px; vertical-align: middle;">info_circle</i> 
-                  Atur durasi dan pilih tanggal peminjaman.
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Lampiran Surat Peminjaman</div>
-                <div class="item-input-wrap">
-                  <input type="file" id="item-file" accept=".pdf,.jpg,.png">
-                </div>
-              </div>
-            </li>
-
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Catatan (Opsional)</div>
-                <div class="item-input-wrap">
-                  <textarea id="item-catatan" placeholder="Contoh: Butuh kabel perpanjangan tambahan"></textarea>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    `,
-    buttons: [
-      { text: 'Batal', close: true },
-      {
-        text: 'Ajukan',
-        bold: true,
-        onClick: function() {
-          // --- VALIDASI INPUT ---
-          const kegiatan = document.getElementById('item-kegiatan').value;
-          const ormawa = document.getElementById('item-ormawa').value;
-          const barang = document.getElementById('item-barang').value;
-          const jumlah = document.getElementById('item-jumlah').value;
-          
-          // Validasi Tanggal
-          const mode = document.querySelector('input[name="item-date-mode"]:checked').value;
-          const durasi = parseInt(document.getElementById('item-durasi').value);
-          let isDateValid = false;
-
-          if (mode === 'consecutive') {
-             if(document.getElementById('item-tanggal-mulai').value) isDateValid = true;
-          } else {
-             const calInput = document.getElementById('item-calendar-random').value;
-             if(calInput) {
-                const count = calInput.split(',').length;
-                if(count === durasi) isDateValid = true;
-                else {
-                  app.toast.create({ text: `Durasi ${durasi} hari, pilih ${durasi} tanggal!`, position: 'center', closeTimeout: 2000 }).open();
-                  return false;
-                }
-             }
-          }
-
-          if (!kegiatan || !ormawa || !barang || !jumlah || !isDateValid) {
-            app.toast.create({
-              text: 'Mohon lengkapi semua data wajib!',
-              position: 'center',
-              closeTimeout: 1500,
-            }).open();
-            return false;
-          }
-
-          app.toast.create({
-            text: `Peminjaman ${jumlah} unit ${barang} berhasil diajukan!`,
-            position: 'center',
-            closeTimeout: 2500,
-          }).open();
-        }
-      }
-    ],
-    // --- LOGIKA TANGGAL ---
-    on: {
-      opened: function () {
-        const durationInput = document.getElementById('item-durasi');
-        const startInput = document.getElementById('item-tanggal-mulai');
-        const randomInput = document.getElementById('item-calendar-random');
-        const summaryDiv = document.getElementById('item-date-summary');
-        const wrapConsecutive = document.getElementById('item-wrap-consecutive');
-        const wrapRandom = document.getElementById('item-wrap-random');
-        const radios = document.querySelectorAll('input[name="item-date-mode"]');
-        const labelCountNeeded = document.getElementById('item-count-needed');
-
-        let calendarItemRandom;
-
-        function updateMode() {
-          const mode = document.querySelector('input[name="item-date-mode"]:checked').value;
-          const durasi = parseInt(durationInput.value);
-          
-          if (mode === 'consecutive') {
-            wrapConsecutive.style.display = 'flex';
-            wrapRandom.style.display = 'none';
-            updateSummaryConsecutive();
-          } else {
-            wrapConsecutive.style.display = 'none';
-            wrapRandom.style.display = 'flex';
-            labelCountNeeded.innerText = durasi;
-            
-            if (calendarItemRandom) calendarItemRandom.destroy();
-            initItemRandomCalendar(durasi);
-            randomInput.value = ''; 
-            summaryDiv.innerHTML = `Silakan pilih <strong>${durasi} tanggal</strong>.`;
-          }
-        }
-
-        function updateSummaryConsecutive() {
-           if (startInput.value) {
-            const startDate = new Date(startInput.value);
-            const durasi = parseInt(durationInput.value);
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + (durasi - 1));
-            
-            const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-            
-            if(durasi === 1) {
-               summaryDiv.innerHTML = `Dipinjam tanggal: <strong>${format(startDate)}</strong>`;
-            } else {
-               summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong>`;
-            }
-            summaryDiv.style.background = "#e7f1ff";
-           }
-        }
-
-        function initItemRandomCalendar(maxDates) {
-           calendarItemRandom = app.calendar.create({
-             inputEl: '#item-calendar-random',
-             openIn: 'customModal',
-             header: true,
-             footer: true,
-             multiple: true,
-             dateFormat: 'dd/mm/yyyy',
-             toolbarCloseText: 'Selesai',
-             formatValue: function (p, values) {
-                return values.map(function (d) {
-                   return d.getDate() + ' ' + d.toLocaleDateString('id-ID', { month: 'short' });
-                }).join(', ');
-             },
-             on: {
-               change: function (c, values) {
-                 if (values.length > maxDates) {
-                   values.pop(); 
-                   c.setValue(values);
-                   app.toast.create({text: `Maksimal ${maxDates} hari!`, closeTimeout: 1000, position:'center'}).open();
-                 }
-                 if (values.length > 0) {
-                    const fullDates = values.map(d => d.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})).join('<br>');
-                    summaryDiv.innerHTML = `Tanggal Dipilih:<br><strong>${fullDates}</strong>`;
-                 } else {
-                    summaryDiv.innerHTML = `Silakan pilih <strong>${maxDates} tanggal</strong> berbeda.`;
-                 }
-               }
-             }
-           });
-        }
-
-        radios.forEach(r => r.addEventListener('change', updateMode));
-        durationInput.addEventListener('change', updateMode);
-        startInput.addEventListener('change', updateSummaryConsecutive);
-
-        updateMode();
+        initializeDateSelection({
+          durationEl: '#item-durasi',
+          startDateEl: '#item-tanggal-mulai',
+          randomDateEl: '#item-calendar-random',
+          summaryEl: '#item-date-summary',
+          consecutiveWrapEl: '#item-wrap-consecutive',
+          randomWrapEl: '#item-wrap-random',
+          dateModeName: 'item-date-mode',
+          countNeededEl: '#item-count-needed',
+          summaryTextConsecutive: 'Dipinjam tanggal',
+          summaryTextRandom: 'Tanggal Dipilih'
+        });
+      },
+      closed: function() {
+        closeAndCleanupDialog(itemDialog);
       }
     }
   }).open();
 }
 });
 
+// ============================================
+// REUSABLE HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Initializes the date selection logic for a dialog form.
+ * This function handles the "consecutive" vs "random" date picking mode.
+ * @param {object} options - Configuration for element IDs and settings.
+ * @param {string} options.durationEl - The CSS selector for the duration <select> input.
+ * @param {string} options.startDateEl - The CSS selector for the consecutive start date <input>.
+ * @param {string} options.randomDateEl - The CSS selector for the random multi-date calendar <input>.
+ * @param {string} options.summaryEl - The CSS selector for the date summary <div>.
+ * @param {string} options.consecutiveWrapEl - The CSS selector for the wrapper of the consecutive date input.
+ * @param {string} options.randomWrapEl - The CSS selector for the wrapper of the random date input.
+ * @param {string} options.dateModeName - The `name` attribute of the radio buttons for date mode.
+ * @param {string} options.countNeededEl - The CSS selector for the <span> showing how many dates to pick.
+ * @param {string} options.summaryTextConsecutive - The text to show in summary for consecutive dates.
+ * @param {string} options.summaryTextRandom - The text to show in summary for random dates.
+ */
+function initializeDateSelection(options) {
+  const durationInput = document.querySelector(options.durationEl);
+  const startInput = document.querySelector(options.startDateEl);
+  const randomInput = document.querySelector(options.randomDateEl);
+  const summaryDiv = document.querySelector(options.summaryEl);
+  const wrapConsecutive = document.querySelector(options.consecutiveWrapEl);
+  const wrapRandom = document.querySelector(options.randomWrapEl);
+  const radios = document.querySelectorAll(`input[name="${options.dateModeName}"]`);
+  const labelCountNeeded = document.querySelector(options.countNeededEl);
+
+  let calendarRandom; // To hold the Framework7 calendar instance
+
+  // 1. Function to switch UI between "consecutive" and "random"
+  function updateMode() {
+    const mode = document.querySelector(`input[name="${options.dateModeName}"]:checked`).value;
+    const durasi = parseInt(durationInput.value, 10);
+
+    if (mode === 'consecutive') {
+      wrapConsecutive.style.display = 'flex';
+      wrapRandom.style.display = 'none';
+      updateSummaryConsecutive();
+    } else {
+      wrapConsecutive.style.display = 'none';
+      wrapRandom.style.display = 'flex';
+      if(labelCountNeeded) labelCountNeeded.innerText = durasi;
+      
+      // Destroy old calendar instance if it exists, then create a new one
+      if (calendarRandom) calendarRandom.destroy();
+      initRandomCalendar(durasi);
+      randomInput.value = ''; // Reset value
+      summaryDiv.innerHTML = `<i class="f7-icons" style="font-size: 14px; vertical-align: middle;">info_circle</i> Silakan pilih <strong>${durasi} tanggal</strong> berbeda di kalender.`;
+    }
+  }
+
+  // 2. Logic for "consecutive" date summary
+  function updateSummaryConsecutive() {
+    if (startInput.value) {
+      const startDate = new Date(startInput.value);
+      const durasi = parseInt(durationInput.value, 10);
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + (durasi - 1));
+      
+      const format = (d) => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      
+      if (durasi === 1) {
+        summaryDiv.innerHTML = `${options.summaryTextConsecutive}: <strong>${format(startDate)}</strong>`;
+      } else {
+        summaryDiv.innerHTML = `Mulai: <strong>${format(startDate)}</strong> <br> Sampai: <strong>${format(endDate)}</strong> (Berurutan)`;
+      }
+      summaryDiv.style.background = "#e7f1ff";
+    }
+  }
+
+  // 3. Initialize the multi-select Framework7 Calendar
+  function initRandomCalendar(maxDates) {
+    calendarRandom = app.calendar.create({
+      inputEl: options.randomDateEl,
+      openIn: 'customModal',
+      header: true,
+      footer: true,
+      multiple: true,
+      dateFormat: 'dd/mm/yyyy',
+      toolbarCloseText: 'Selesai',
+      formatValue: function (p, values) {
+        // A short format for the input field
+        return values.map(d => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })).join(', ');
+      },
+      on: {
+        change: function (c, values) {
+          // Limit the number of selected dates
+          if (values.length > maxDates) {
+            values.pop(); 
+            c.setValue(values);
+            app.toast.create({text: `Maksimal ${maxDates} hari sesuai durasi!`, closeTimeout: 1500, position:'center'}).open();
+          }
+          
+          // Update summary text with full dates
+          if (values.length > 0) {
+            const fullDates = values.map(d => d.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})).join('<br>');
+            summaryDiv.innerHTML = `${options.summaryTextRandom}:<br><strong>${fullDates}</strong>`;
+          } else {
+            summaryDiv.innerHTML = `<i class="f7-icons" style="font-size: 14px; vertical-align: middle;">info_circle</i> Silakan pilih <strong>${maxDates} tanggal</strong> berbeda.`;
+          }
+        }
+      }
+    });
+  }
+
+  // Add event listeners
+  radios.forEach(r => r.addEventListener('change', updateMode));
+  durationInput.addEventListener('change', updateMode);
+  startInput.addEventListener('change', updateSummaryConsecutive);
+
+  // Initial run on dialog open
+  updateMode();
+}
+
+
 //lili
 // Event handlers untuk status pengajuan (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-document.getElementById('status-1').addEventListener('click', function() {
+observeAndAttach('status-1', 'click', function() {
   showStatusDetail(
     'Peminjaman Ruangan - Ruang 305',
     '10/06/2025 - 15:00-17:00',
@@ -1318,7 +1007,7 @@ document.getElementById('status-1').addEventListener('click', function() {
   );
 });
 
-document.getElementById('status-2').addEventListener('click', function() {
+observeAndAttach('status-2', 'click', function() {
   showStatusDetail(
     'Peminjaman Peralatan - Proyektor',
     '10/06/2025 - 2 hari',
@@ -1336,7 +1025,7 @@ document.getElementById('status-2').addEventListener('click', function() {
   );
 });
 
-document.getElementById('status-3').addEventListener('click', function() {
+observeAndAttach('status-3', 'click', function() {
   showStatusDetail(
     'Surat Dispensasi - Acara Makrab',
     '09/06/2025',
@@ -1353,7 +1042,7 @@ document.getElementById('status-3').addEventListener('click', function() {
   );
 });
 
-document.getElementById('status-4').addEventListener('click', function() {
+observeAndAttach('status-4', 'click', function() {
   showStatusDetail(
     'Peminjaman Ruangan - GSG',
     '08/06/2025 - 09:00-12:00',
@@ -1371,118 +1060,17 @@ document.getElementById('status-4').addEventListener('click', function() {
 });
 
 // Event handlers untuk footer navigation (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-document.getElementById('btn-calendar').addEventListener('click', function() {
-  mainView.router.navigate('/calendar/');
+observeAndAttach('btn-calendar', 'click', function() {
+  if (mainView && mainView.router && typeof mainView.router.navigate === 'function') mainView.router.navigate('/calendar/');
 });
 
-document.getElementById('btn-notification').addEventListener('click', function() {
+observeAndAttach('btn-notification', 'click', function() {
   showNotifications();
 });
 
-document.getElementById('btn-help').addEventListener('click', function() {
+observeAndAttach('btn-help', 'click', function() {
   showFeatureDialog('Pusat Bantuan', 'Temukan panduan penggunaan dan FAQ aplikasi SIMARSIP.');
 });
-
-// Fungsi untuk menampilkan dialog fitur (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-function showFeatureDialog(title, description) {
-  app.dialog.create({
-    title: title,
-    text: description,
-    content: `
-      <div class="dialog-form">
-        <div class="list">
-          <ul>
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Nama Kegiatan</div>
-                <div class="item-input-wrap">
-                  <input type="text" placeholder="Masukkan nama kegiatan">
-                </div>
-              </div>
-            </li>
-            <li class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Tanggal</div>
-                <div class="item-input-wrap">
-                  <input type="date" placeholder="Pilih tanggal">
-                </div>
-
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    `,
-    buttons: [
-      {
-        text: 'Batal',
-        close: true
-      },
-      {
-        text: 'Ajukan',
-        bold: true,
-        onClick: function() {
-          app.toast.create({
-            text: 'Pengajuan ' + title + ' berhasil dikirim!',
-            position: 'center',
-            closeTimeout: 2000,
-          }).open();
-        }
-      }
-    ]
-  }).open();
-}
-
-// Fungsi untuk menampilkan detail status (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-function showStatusDetail(title, date, details, status) {
-  let statusText = '';
-  let statusClass = '';
-  
-  switch(status) {
-    case 'approve':
-      statusText = 'Disetujui';
-      statusClass = 'badge-approve';
-      break;
-    case 'wait':
-      statusText = 'Menunggu';
-      statusClass = 'badge-wait';
-      break;
-    case 'verified':
-      statusText = 'Terverifikasi Dosen';
-      statusClass = 'badge-verified';
-      break;
-    case 'reject':
-      statusText = 'Ditolak';
-      statusClass = 'badge-reject';
-      break;
-  }
-  
-  app.dialog.create({
-    title: 'Detail Pengajuan',
-    content: `
-      <div class="status-detail">
-        <h3>${title}</h3>
-        <p class="detail-date">${date}</p>
-        <div class="detail-content">
-          ${details}
-        </div>
-        <div class="status-badge ${statusClass}">${statusText}</div>
-      </div>
-      <style>
-        .status-detail h3 { margin: 0 0 10px 0; color: #333; }
-        .detail-date { color: #666; margin-bottom: 15px; font-size: 14px; }
-        .detail-content { margin-bottom: 20px; line-height: 1.5; }
-        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 12px; font-weight: bold; font-size: 12px; }
-      </style>
-    `,
-    buttons: [
-      {
-        text: 'Tutup',
-        close: true
-      }
-    ]
-  }).open();
-}
 
 // Fungsi untuk menampilkan dialog fitur (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
 function showFeatureDialog(title, description) {
@@ -1582,8 +1170,12 @@ function initHistoryPage() {
 
   filterBtns.forEach(btn => {
     btn.addEventListener('click', function() {
-      filterBtns.forEach(b => b.classList.remove('active'));
+      filterBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
       this.classList.add('active');
+      this.setAttribute('aria-selected', 'true');
       currentFilter = this.dataset.filter;
       displayHistory(currentFilter);
     });
@@ -1591,6 +1183,32 @@ function initHistoryPage() {
 
   // Tampilkan history yang difilter
   displayHistory(currentFilter);
+
+  // Delegated handlers attached safely (only once when history page initialized)
+  (function attachHistoryDelegation(){
+    const el = document.getElementById('history-list');
+    if (el && el.dataset && el.dataset.delegationAttached) return;
+    observeAndAttach('history-list', 'click', function (e) {
+    const itemEl = (e.target && e.target.closest) ? e.target.closest('.history-item') : null;
+    if (itemEl && itemEl.dataset && itemEl.dataset.historyId) {
+      showHistoryDetail(Number(itemEl.dataset.historyId));
+    }
+    });
+
+    observeAndAttach('history-list', 'keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const itemEl = (e.target && e.target.closest) ? e.target.closest('.history-item') : null;
+        if (itemEl && itemEl.dataset && itemEl.dataset.historyId) {
+          e.preventDefault();
+          showHistoryDetail(Number(itemEl.dataset.historyId));
+        }
+      }
+    });
+
+    // mark attached
+    const el2 = document.getElementById('history-list');
+    if (el2 && el2.dataset) el2.dataset.delegationAttached = '1';
+  })();
 }
 
 function displayHistory(filter) {
@@ -1613,8 +1231,9 @@ function displayHistory(filter) {
 
   historyList.innerHTML = filteredData.map(item => {
     const statusText = getStatusText(item.status);
+    const ariaLabel = `${item.title} — ${item.date}. ${statusText}`;
     return `
-      <div class="history-item status-${item.status}" onclick="showHistoryDetail(${item.id})">
+      <div class="history-item status-${item.status}" data-history-id="${item.id}" role="button" tabindex="0" aria-label="${ariaLabel}">
         <div class="history-item-header">
           <div>
             <div class="history-item-title">${item.title}</div>
@@ -1626,6 +1245,8 @@ function displayHistory(filter) {
       </div>
     `;
   }).join('');
+
+  // Delegated click/keyboard handling is attached in initHistoryPage to avoid duplicates
 }
 
 function getStatusText(status) {
@@ -1819,4 +1440,31 @@ function handleChangePassword(event) {
       }
     ]
   }).open();
+}
+
+// Global loader control helpers (safe - create element if missing)
+function showGlobalLoader(message) {
+  try {
+    let el = document.getElementById('global-loader');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'global-loader';
+      el.innerHTML = '<div class="gl-spinner"></div><div class="gl-message">' + (message || 'Loading...') + '</div>';
+      document.body.appendChild(el);
+    }
+    el.classList.add('gl-active');
+    // update message if provided
+    const msg = el.querySelector('.gl-message'); if (msg && message) msg.textContent = message;
+  } catch (err) {
+    console.error('[my-app.js] showGlobalLoader error:', err);
+  }
+}
+
+function hideGlobalLoader() {
+  try {
+    const el = document.getElementById('global-loader');
+    if (el) el.classList.remove('gl-active');
+  } catch (err) {
+    console.error('[my-app.js] hideGlobalLoader error:', err);
+  }
 }

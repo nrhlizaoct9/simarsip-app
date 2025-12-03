@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SIMARSIP App</title>
+  <!-- Load modern font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <!-- Framework7 CSS -->
   <link rel="stylesheet" href="node_modules/framework7/framework7-bundle.min.css">
@@ -13,7 +15,6 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="my-app.css">
-  <link rel="stylesheet" href="my-app-new.css">
   
 </head>
 
@@ -176,8 +177,11 @@
           </div>
 
           <!-- LINK LIHAT SEMUA RIWAYAT -->
-          <div class="block">
-            <a href="/history/" class="button button-fill" id="btn-all-history">Lihat Semua Riwayat</a>
+          <div class="see-more-container">
+            <a href="/history/" class="see-more" id="btn-all-history" aria-label="Lihat Semua Riwayat">
+              <span>Lihat Semua Riwayat</span>
+              <i class="f7-icons">chevron_right</i>
+            </a>
           </div>
 
         </div>

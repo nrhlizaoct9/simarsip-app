@@ -1,12 +1,42 @@
 :root {
-  --f7-theme-color-primary: #4a90e2; /* A fresh blue */
-  --f7-theme-color-secondary: #50e3c2; /* A complementary green-teal */
-  --f7-accent-color: #FFD700; /* Gold for highlights */
-  --f7-gradient-primary: linear-gradient(135deg, var(--f7-theme-color-primary) 0%, var(--f7-theme-color-secondary) 100%);
+  /* Modern theme tokens */
+  --app-primary: #5b7cfa; /* main brand blue */
+  --app-primary-600: #4769e6;
+  --app-accent: #7c3aed; /* purple accent */
+  --app-muted: #6b7280;
+  --surface: #ffffff;
+  --bg: #f7fafc;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 4px 12px rgba(16,24,40,0.06);
+  --shadow-soft: 0 6px 18px rgba(16,24,40,0.08);
+  --shadow-md: 0 10px 30px rgba(16,24,40,0.12);
+  --surface-variant: #f8fafc;
+  --muted-contrast: rgba(107,114,128,0.08);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --glass: rgba(255,255,255,0.6);
+  --f7-theme-color-primary: var(--app-primary);
+  --f7-theme-color-secondary: var(--app-accent);
+  --f7-accent-color: #FFD700;
+  --f7-gradient-primary: linear-gradient(135deg, var(--app-primary) 0%, #6ee7b7 100%);
+
+  /* Typography scale */
+  --type-base: 15px;
+  --type-sm: 13px;
+  --type-lg: 17px;
+  --line-height-base: 1.45;
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, 'Helvetica Neue', Arial;
+  font-size: var(--type-base);
+  color: var(--text-primary);
+  line-height: var(--line-height-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -110,23 +140,23 @@ body {
 .btn-primary {
   width: 100%;
   padding: 14px;
-  background: var(--f7-gradient-primary);
+  background: linear-gradient(90deg, var(--app-primary), var(--app-primary-600));
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(var(--f7-theme-color-primary-rgb), 0.4);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+  box-shadow: var(--shadow-soft);
 }
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(var(--f7-theme-color-primary-rgb), 0.5);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
 }
 .btn-primary:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(var(--f7-theme-color-primary-rgb), 0.3);
+  box-shadow: 0 4px 10px rgba(16,24,40,0.06);
 }
 .auth-footer {
   text-align: center;
@@ -357,44 +387,82 @@ body {
 
 /* Menu Card */
 .menu-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 10px;
-  margin-bottom: 20px;
-  gap: 8px;
-}
-
-.menu-card {
-  flex: 1;
-  background: #0d6efd;
-  color: white;
-  text-align: center;
-  padding: 15px 8px;
-  border-radius: 12px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   border: none;
   min-height: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: all 140ms ease;
+}
+
+.menu-card {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08);
+  transition: all 140ms ease;
+  padding: 12px 8px;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(16, 24, 40, 0.06);
 }
 
 .menu-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(16, 24, 40, 0.12);
+  border-color: var(--app-primary);
 }
 
 .menu-card:active {
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.1);
 }
 
 .menu-card .menu-icon {
   font-size: 28px;
   margin-bottom: 8px;
+  color: var(--app-primary);
+  transition: all 120ms ease;
+}
+
+.menu-card:hover .menu-icon {
+  transform: scale(1.15);
+}
+
+.display-see-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.see-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--app-primary);
+  text-decoration: none;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: rgba(18, 99, 255, 0.06);
+  font-weight: 600;
+  font-size: 15px;
+  min-height: 44px;
+  align-self: center;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.see-more:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(91, 124, 250, 0.25);
+  background: rgba(18, 99, 255, 0.12);
+}
+
+.see-more:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 /* Status Card */
@@ -517,9 +585,13 @@ body {
 
 /* Footer - IMPROVED TOOLBAR */
 .toolbar-bottom {
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-  height: 60px;
-  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -8px 24px rgba(16,24,40,0.06);
+  height: 64px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 6px);
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(6px);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 }
 
 .toolbar-inner {
@@ -658,12 +730,12 @@ body {
 
 /* Welcome Banner */
 .welcome-banner {
-  background: linear-gradient(135deg, #0d6efd, #6f42c1);
+  background: linear-gradient(135deg, var(--app-primary), var(--app-accent));
   color: white;
-  padding: 20px 15px;
+  padding: 18px 14px;
   margin: 10px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
 }
 
 .welcome-banner h3 {
@@ -678,36 +750,65 @@ body {
   font-size: 14px;
 }
 
-/* Navbar Customization */
+/* Navbar Customization - Modern */
 .navbar {
-  background: #0d6efd;
+  background: linear-gradient(135deg, var(--app-primary) 0%, var(--app-primary-600) 100%);
+  box-shadow: var(--shadow-soft);
+  border-bottom: none;
 }
 
 .navbar .title {
   color: white;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 18px;
+  letter-spacing: 0.3px;
 }
 
 .navbar-bg {
-  background: #0d6efd;
+  background: linear-gradient(135deg, var(--app-primary) 0%, var(--app-primary-600) 100%);
+}
+
+.navbar-inner {
+  height: 56px;
+  align-items: center;
+}
+
+.navbar-inner a {
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 120ms ease;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.navbar-inner a:active {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0.95);
+}
+
+.navbar-inner i {
+  font-size: 22px;
 }
 
 /* Page Background */
 .page-content {
-  background: #f8f9fa;
+  background: linear-gradient(180deg, var(--bg), var(--surface-variant));
   padding-bottom: 70px; /* Space for toolbar */
 }
 
 /* Responsive Design */
 @media (max-width: 480px) {
   .menu-card {
-    padding: 12px 5px;
-    min-height: 70px;
-  }
-  
-  .menu-card .menu-icon {
-    font-size: 24px;
+    padding: 12px 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(16,24,40,0.06);
+    background: linear-gradient(180deg, #fff, var(--surface-variant));
+    font-size: var(--type-base);
+    transition: box-shadow 180ms ease, border-color 180ms ease;
   }
   
   .menu-card span {
@@ -762,25 +863,30 @@ body {
   right: 0;
   bottom: 0;
   display: none;
+  pointer-events: none; /* don't block clicks when hidden */
   align-items: center;
   justify-content: center;
   background: rgba(0,0,0,0.35);
   z-index: 12000;
 }
+#global-loader.gl-active {
+  display: flex;
+  pointer-events: auto; /* allow interaction with loader when visible */
+}
 #global-loader .gl-spinner {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
-  border: 5px solid rgba(255,255,255,0.15);
-  border-top-color: #fff;
-  animation: gl-spin 1s linear infinite;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-}
-#global-loader .gl-message {
-  margin-top: 10px;
-  color: #fff;
-  font-weight: 600;
-  text-align: center;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 180ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms ease;
+  padding: 14px 10px;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--muted-contrast);
   font-size: 14px;
 }
 @keyframes gl-spin { to { transform: rotate(360deg); } }
@@ -991,16 +1097,16 @@ body {
   bottom: 76px; /* Above the toolbar */
   width: 56px;
   height: 56px;
-  border-radius: 50%;
-  background-color: #0d6efd; /* Blue color from example */
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary-600));
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  font-size: 22px;
+  box-shadow: 0 8px 20px rgba(91,124,250,0.18);
   z-index: 1000;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .fab:active {
@@ -1172,37 +1278,52 @@ body {
 .status-card:nth-child(3) { animation-delay: 0.3s; }
 .status-card:nth-child(4) { animation-delay: 0.4s; }
 
-/* HISTORY PAGE STYLES */
+/* HISTORY PAGE STYLES - Filter Tabs */
 .history-filter {
   display: flex;
   gap: 8px;
-  padding: 10px;
+  padding: 12px 10px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   margin-bottom: 15px;
 }
 
 .filter-btn {
-  padding: 8px 16px;
-  border: 2px solid #ddd;
+  padding: 10px 18px;
+  border: 2px solid #e9ecef;
   background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
-  transition: all 0.3s ease;
+  transition: all 200ms ease;
   color: #666;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.filter-btn.active {
-  background: #0d6efd;
-  color: white;
-  border-color: #0d6efd;
+.filter-btn:hover {
+  border-color: var(--app-primary);
+  background: rgba(91, 124, 250, 0.04);
 }
 
 .filter-btn:active {
-  opacity: 0.8;
+  transform: scale(0.96);
+}
+
+.filter-btn.active {
+  background: var(--app-primary);
+  color: white;
+  border-color: var(--app-primary);
+  box-shadow: 0 4px 12px rgba(91, 124, 250, 0.25);
+}
+
+.filter-btn[role="tab"] {
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .history-list {
@@ -1224,7 +1345,66 @@ body {
 
 .history-item:active {
   box-shadow: 0 4px 8px rgba(0,0,0,0.12);
-  transform: translateY(-2px);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(91,124,250,0.18);
+/* Improve touch target and focus styles for accessibility */
+.history-item {
+  min-height: 64px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.history-item:focus {
+  outline: none;
+}
+
+.history-item:focus-visible {
+  box-shadow: 0 0 0 3px rgba(13,110,253,0.18);
+  border-left-width: 6px;
+}
+
+.history-item[role="button"] {
+  -webkit-tap-highlight-color: rgba(0,0,0,0.05);
+}
+
+/* Defensive: prevent hidden framework7 overlays from blocking clicks
+   When overlays/panels/dialogs/popups are not active they should not capture pointer events.
+   Framework7 uses many class names during transitions; allow common 'active' classes to receive events. */
+.panel, .popup, .dialog, .sheet, .popover, .modal-overlay, .modal-in, .modal-out {
+  pointer-events: none;
+}
+
+/* Common active classes used by Framework7 */
+.panel-open, .panel-active, .popup-in, .popup-open, .dialog-in, .sheet-in, .popover-in, .modal-in, .sheet-open, .panel-in {
+  pointer-events: auto;
+}
+
+/* Additional Framework7 overlay safety: hide backdrops when not active */
+.dialog-backdrop, .popup-overlay, .sheet-modal {
+  pointer-events: none;
+}
+
+.dialog-backdrop.active, .popup-overlay.active, .sheet-modal.in {
+  pointer-events: auto;
+}
+
+/* Ensure modals and overlays don't interfere with page interactions when closed */
+[class*="overlay"]:not(.active):not([class*="-in"]):not([class*="-open"]) {
+  pointer-events: none;
+}
+
+/* Framework7 action sheet and picker modals safety */
+.actions-modal, .picker-modal, .calendar-modal {
+  pointer-events: none;
+}
+
+.actions-modal.active, .actions-modal.modal-in,
+.picker-modal.active, .picker-modal.modal-in,
+.calendar-modal.active, .calendar-modal.modal-in {
+  pointer-events: auto;
 }
 
 .history-item.status-approve {
@@ -1271,31 +1451,41 @@ body {
 
 .history-status-badge {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .history-status-badge.approve {
-  background: rgba(40, 167, 69, 0.1);
-  color: #28a745;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.06) 100%);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .history-status-badge.wait {
-  background: rgba(255, 193, 7, 0.1);
-  color: #ffc107;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.06) 100%);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 .history-status-badge.reject {
-  background: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(239, 68, 68, 0.06) 100%);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
 .history-status-badge.verified {
-  background: rgba(23, 162, 184, 0.1);
-  color: #17a2b8;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.06) 100%);
+  color: #1e40af;
+  border: 1px solid rgba(59, 130, 246, 0.25);
 }
 
 .history-empty {
@@ -1315,9 +1505,21 @@ body {
   margin: 0;
 }
 
-/* Sembunyikan halaman history secara default - kita akan menampilkannya lewat JS */
-[data-name="history"] {
-  display: none;
+/* Removed forced hiding of history page to allow Framework7 to control page visibility */
+/* [data-name="history"] { display: none; } */
+
+/* Ensure main 'Lihat Semua Riwayat' button is reachable on small screens */
+#btn-all-history {
+  position: relative;
+  z-index: 1200; /* above toolbar and overlays */
+  touch-action: manipulation;
+  min-height: 48px;
+  padding: 12px 16px;
+}
+
+/* Extra safe spacing so buttons in page content aren't covered by the toolbar */
+.page-content > .block {
+  margin-bottom: 12px;
 }
 
 /* ============================================
@@ -1706,6 +1908,30 @@ textarea:focus {
   min-height: 44px;
 }
 
+/* Keep dialog buttons visible on small screens: sticky footer */
+.dialog {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.dialog .dialog-content {
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.dialog-buttons {
+  position: sticky;
+  bottom: 0;
+  background: var(--f7-card-bg-color, #fff);
+  z-index: 50;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.dialog-form {
+  padding-bottom: 84px; /* space for sticky buttons */
+}
+
 /* Dialog form styling for forms */
 .dialog-form {
   padding: 0 16px 16px 16px;
@@ -1997,182 +2223,73 @@ a {
    ============================================ */
 
 /* Framework7 dialog adjustments */
-.dialog-wrapper {
-  max-width: 95vw !important;
-  margin: auto !important;
+:root {
+  --f7-theme-color: #2196f3;
+  --f7-theme-color-rgb: 33, 150, 243;
+  --f7-theme-color-shade: #1e88e5;
+  --f7-theme-color-tint: #42a5f5;
+
+  --f7-navbar-bg-color: var(--f7-theme-color);
+  --f7-navbar-text-color: #fff;
+  --f7-navbar-link-color: #fff;
+  --f7-toolbar-bg-color: #ffffff;
+  --f7-tabbar-link-active-color: var(--f7-theme-color);
+  --f7-block-title-text-color: #8e8e93;
 }
 
-/* Ensure scrollable content */
-.dialog .dialog-inner,
-.dialog-inner {
-  max-height: calc(90vh - 100px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0;
+.dark {
+  --f7-theme-color: #2196f3;
+  --f7-theme-color-rgb: 33, 150, 243;
+  --f7-theme-color-shade: #1e88e5;
+  --f7-theme-color-tint: #42a5f5;
+
+  --f7-bars-bg-color: #1c1c1d;
+  --f7-bars-bg-color-rgb: 28, 28, 29;
+  --f7-page-bg-color: #000000;
+  --f7-page-bg-color-rgb: 0, 0, 0;
+  --f7-card-bg-color: #1c1c1d;
+  --f7-list-bg-color: #1c1c1d;
+  --f7-block-bg-color: #1c1c1d;
 }
 
-/* Input group styling */
-.dialog-form .item-input-wrap input,
-.dialog-form .item-input-wrap select {
-  width: 100%;
-  box-sizing: border-box;
+/* Override for Navbar in dark mode */
+.dark .navbar {
+  --f7-navbar-bg-color: #1c1c1d;
 }
 
-/* Label styling for clarity */
-.dialog-form label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #333;
+/* Custom card styling */
+.menu-card-new {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  background: var(--f7-card-bg-color, #fff);
 }
-
-/* Extra small device optimizations */
-@media (max-width: 320px) {
-  .dialog,
-  .dialog-content {
-    max-width: 100vw !important;
-    width: 100% !important;
-  }
-
-  .dialog-title {
-    font-size: 15px;
-    padding: 12px 10px;
-  }
-
-  .dialog-buttons button {
-    font-size: 12px;
-    padding: 9px 10px;
-    min-height: 40px;
-  }
-
-  .dialog-form {
-    padding: 0 10px 10px 10px;
-  }
-
-  .dialog-form input,
-  .dialog-form select,
-  .dialog-form textarea {
-    font-size: 16px; /* Prevent iOS zoom */
-    padding: 11px 10px;
-  }
-}
-
-/* Landscape mode adjustments */
-@media (max-height: 500px) and (orientation: landscape) {
-  .dialog,
-  .dialog-content {
-    max-height: 95vh !important;
-  }
-
-  .dialog-form {
-    max-height: 60vh;
-  }
-
-  .dialog-title {
-    padding: 12px 14px;
-    font-size: 16px;
-  }
-
-  .dialog-buttons {
-    padding: 10px 14px;
-  }
-
-  .dialog-buttons button {
-    padding: 10px 12px;
-    font-size: 13px;
-    min-height: 40px;
-  }
-}
-
-/* Ensure form inputs are never cut off */
-.dialog-form .item-content input,
-.dialog-form .item-content select,
-.dialog-form .item-content textarea {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-clip: padding-box;
-}
-
-/* Fix for iOS input styling */
-input[type="date"],
-input[type="time"],
-input[type="datetime-local"],
-select {
-  font-family: inherit;
-  font-size: 16px;
-}
-
-/* Improve select dropdown */
-select {
-  cursor: pointer;
-  padding: 12px;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 16px;
-  padding-right: 32px;
-}
-
-/* Input clear button styling */
-.input-clear-button {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  opacity: 0.5;
-  transition: opacity 0.2s;
-}
-
-.input-clear-button:hover {
-  opacity: 1;
-}
-
-/* Make input-wrap responsive */
-.dialog-form .item-input-wrap {
-  position: relative;
-}
-
-/* Calendar input specific */
-#dispen-calendar-random,
-#item-calendar-random,
-input[readonly] {
-  cursor: pointer;
-  padding-right: 40px !important;
-}
-
-/* Ensure form fields don't overflow */
-.dialog-form .item-content {
-  overflow: hidden;
-}
-
-.dialog-form .item-input-wrap {
+.menu-card-new .icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  position: relative;
+  justify-content: center;
+  margin-bottom: 8px;
+  color: #fff;
+}
+.dark .menu-card-new {
+  box-shadow: none;
 }
 
-.dialog-form .item-input-wrap input,
-.dialog-form .item-input-wrap select {
-  flex: 1;
-  min-width: 0;
+/* Status Icon Colors */
+.icon-approve {
+  color: var(--f7-color-green);
 }
-
-/* Extra protection for very small screens */
-@media (max-width: 300px) {
-  .dialog-form input,
-  .dialog-form select,
-  .dialog-form textarea {
-    font-size: 14px;
-  }
-
-  .dialog-title {
-    word-break: break-word;
-    overflow-wrap: break-word;
-  }
+.icon-wait {
+  color: var(--f7-color-orange);
 }
-
+.icon-reject {
+  color: var(--f7-color-red);
+}

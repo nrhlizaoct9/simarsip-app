@@ -13,11 +13,11 @@
   </div>
   <div class="page-content">
     <div class="block-title">Filter Status</div>
-    <div class="segmented segmented-strong margin-horizontal">
-      <a class="button button-active filter-btn" href="#" data-filter="all">Semua</a>
-      <a class="button filter-btn" href="#" data-filter="approve">Disetujui</a>
-      <a class="button filter-btn" href="#" data-filter="wait">Menunggu</a>
-      <a class="button filter-btn" href="#" data-filter="reject">Ditolak</a>
+    <div class="segmented segmented-strong margin-horizontal" role="tablist" aria-label="Filter riwayat">
+      <button class="button button-active filter-btn" role="tab" aria-selected="true" aria-controls="history-list" data-filter="all">Semua</button>
+      <button class="button filter-btn" role="tab" aria-selected="false" aria-controls="history-list" data-filter="approve">Disetujui</button>
+      <button class="button filter-btn" role="tab" aria-selected="false" aria-controls="history-list" data-filter="wait">Menunggu</button>
+      <button class="button filter-btn" role="tab" aria-selected="false" aria-controls="history-list" data-filter="reject">Ditolak</button>
     </div>
 
     <div class="list media-list" id="history-list">
