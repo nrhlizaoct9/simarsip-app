@@ -13,118 +13,185 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="my-app.css">
+  <link rel="stylesheet" href="my-app-new.css">
   
 </head>
 
 <body>
   <div id="app">
+    <!-- Left panel with reveal effect-->
+    <div class="panel panel-left panel-reveal">
+      <div class="view">
+        <div class="page">
+          <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+              <div class="title">Menu</div>
+            </div>
+          </div>
+          <div class="page-content">
+            <div class="block-title">Preferensi</div>
+            <div class="list simple-list">
+              <ul>
+                <li>
+                  <div class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title">Dark Mode</div>
+                      <div class="item-after">
+                        <label class="toggle" id="dark-mode-toggle">
+                          <input type="checkbox"/>
+                          <span class="toggle-icon"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="view view-main">
       <div data-name="home" class="page">
 
-  <!-- NAVBAR -->
-  <div class="navbar">
-    <div class="navbar-bg"></div>
-    <div class="navbar-inner">
-      <div class="title">SIMARSIP APP</div>
-      <div class="right">
-        <a href="/profile/" class="link user-profile">
-          <i class="f7-icons">person_circle</i>
-          <span>Halo, HMIF!</span>
-        </a>
-      </div>
-    </div>
-  </div>
-
+        <!-- NAVBAR -->
+        <div class="navbar">
+          <div class="navbar-bg"></div>
+          <div class="navbar-inner">
+            <div class="left">
+              <a href="#" class="link icon-only panel-open" data-panel="left">
+                <i class="f7-icons">menu</i>
+              </a>
+            </div>
+            <div class="title">SIMARSIP APP</div>
+            <div class="right">
+              <a href="/profile/" class="link user-profile">
+                <i class="f7-icons">person_circle</i>
+                <span>Halo, HMIF!</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      
         <!-- PAGE CONTENT -->
         <div class="page-content">
 
           <!-- WELCOME BANNER -->
-          <div class="welcome-banner">
-            <h3>Selamat Datang!</h3>
-            <p>Kelola pengajuan surat dan peminjaman dengan mudah</p>
+          <div class="block block-strong inset">
+            <h3 class="no-margin-top">Selamat Datang!</h3>
+            <p class="no-margin-bottom">Kelola pengajuan surat dan peminjaman dengan mudah.</p>
           </div>
 
           <!-- SEARCH BAR -->
-          <div class="searchbar-custom">
-            <input type="text" placeholder="Cari pengajuan...">
-            <i class="f7-icons search-icon">search</i>
-          </div>
+          <form class="searchbar">
+            <div class="searchbar-inner">
+              <div class="searchbar-input-wrap">
+                <input type="search" placeholder="Cari pengajuan...">
+                <i class="searchbar-icon"></i>
+                <span class="input-clear-button"></span>
+              </div>
+              <span class="searchbar-disable-button if-not-aurora">Cancel</span>
+            </div>
+          </form>
 
           <!-- AJUKAN SURAT BARU -->
-          <div class="block-title">Ajukan Surat Baru</div>
-
-          <div class="menu-row">
-            <div class="menu-card" id="btn-room">
-              <i class="f7-icons menu-icon">square_stack_3d_up</i>
-              <span>Form Peminjaman Ruangan</span>
-            </div>
-
-            <div class="menu-card" id="btn-dispen">
-              <i class="f7-icons menu-icon">doc_person_fill</i>
-              <span>Form Surat Dispen</span>
-            </div>
-
-            <div class="menu-card" id="btn-item">
-              <i class="f7-icons menu-icon">cube_box_fill</i>
-              <span>Form Peminjaman Peralatan</span>
+          <div class="block-title">Ajukan Cepat</div>
+          <div class="block">
+            <div class="row">
+              <div class="col-33">
+                <a href="#" id="btn-room" class="card menu-card-new">
+                  <div class="icon" style="background-color: #2196f3;"><i class="f7-icons">building_2_fill</i></div>
+                  <span>Ruangan</span>
+                </a>
+              </div>
+              <div class="col-33">
+                <a href="#" id="btn-dispen" class="card menu-card-new">
+                  <div class="icon" style="background-color: #ff9800;"><i class="f7-icons">doc_text_fill</i></div>
+                  <span>Dispen</span>
+                </a>
+              </div>
+              <div class="col-33">
+                <a href="#" id="btn-item" class="card menu-card-new">
+                  <div class="icon" style="background-color: #f44336;"><i class="f7-icons">cube_box_fill</i></div>
+                  <span>Peralatan</span>
+                </a>
+              </div>
             </div>
           </div>
 
           <!-- STATUS PENGAJUAN -->
           <div class="block-title">Status Pengajuan Terakhir</div>
-
-          <div class="status-card" id="status-1">
-            <div class="status-card-content">
-              <strong>Peminjaman Ruangan - Ruang 305</strong>
-              <small>10/06/2025 - 15:00-17:00</small>
-            </div>
-            <div class="badge-approve">Disetujui</div>
-          </div>
-
-          <div class="status-card" id="status-2">
-            <div class="status-card-content">
-              <strong>Peminjaman Peralatan - Proyektor</strong>
-              <small>10/06/2025 - 2 hari</small>
-            </div>
-            <div class="badge-wait">Menunggu</div>
-          </div>
-
-          <div class="status-card" id="status-3">
-            <div class="status-card-content">
-              <strong>Surat Dispensasi - Acara Makrab</strong>
-              <small>09/06/2025</small>
-            </div>
-            <div class="badge-approve">Disetujui</div>
-          </div>
-
-          <div class="status-card" id="status-4">
-            <div class="status-card-content">
-              <strong>Peminjaman Ruangan - GSG</strong>
-              <small>08/06/2025 - 09:00-12:00</small>
-            </div>
-            <div class="badge-reject">Ditolak</div>
+          <div class="list media-list inset">
+            <ul>
+              <li>
+                <a href="#" id="status-1" class="item-link item-content">
+                  <div class="item-media"><i class="f7-icons icon-approve">checkmark_circle_fill</i></div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title">Peminjaman Ruangan</div>
+                    </div>
+                    <div class="item-subtitle">Ruang 305</div>
+                    <div class="item-text">10/06/2025 - 15:00-17:00</div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#" id="status-2" class="item-link item-content">
+                  <div class="item-media"><i class="f7-icons icon-wait">hourglass</i></div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title">Peminjaman Peralatan</div>
+                    </div>
+                    <div class="item-subtitle">Proyektor</div>
+                    <div class="item-text">10/06/2025 - 2 hari</div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#" id="status-3" class="item-link item-content">
+                  <div class="item-media"><i class="f7-icons icon-approve">checkmark_circle_fill</i></div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title">Surat Dispensasi</div>
+                    </div>
+                    <div class="item-subtitle">Acara Makrab</div>
+                    <div class="item-text">09/06/2025</div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="#" id="status-4" class="item-link item-content">
+                  <div class="item-media"><i class="f7-icons icon-reject">xmark_circle_fill</i></div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title">Peminjaman Ruangan</div>
+                    </div>
+                    <div class="item-subtitle">GSG</div>
+                    <div class="item-text">08/06/2025 - 09:00-12:00</div>
+                  </div>
+                </a>
+              </li>
+            </ul>
           </div>
 
           <!-- LINK LIHAT SEMUA RIWAYAT -->
-          <div class="see-more-container">
-            <a href="#" class="see-more" id="btn-all-history">
-              <span>Lihat Semua Riwayat</span>
-              <i class="f7-icons">chevron_right</i>
-            </a>
+          <div class="block">
+            <a href="/history/" class="button button-fill" id="btn-all-history">Lihat Semua Riwayat</a>
           </div>
 
         </div>
-
+      
         <!-- TOOLBAR BAWAH -->
         <div class="toolbar toolbar-bottom">
           <div class="toolbar-inner">
-            <a href="#" class="link active" id="btn-home">
+            <a href="/home/" class="link active" id="btn-home">
               <div class="link-content">
                 <i class="f7-icons">house_fill</i>
                 <span>Beranda</span>
               </div>
             </a>
-            <a href="#" class="link" id="btn-calendar">
+            <a href="/calendar/" class="link" id="btn-calendar">
               <div class="link-content">
                 <i class="f7-icons">calendar</i>
                 <span>Kalender</span>
@@ -145,60 +212,40 @@
             </a>
           </div>
         </div>
-
-      </div>
-
-      <!-- HALAMAN HISTORY -->
-      <div data-name="history" class="page">
-        
-        <!-- NAVBAR -->
-        <div class="navbar">
-          <div class="navbar-bg"></div>
-          <div class="navbar-inner">
-            <div class="left">
-              <a href="#" class="link back" id="btn-back-history">
-                <i class="icon icon-back"></i>
-                <span class="if-not-md">Kembali</span>
-              </a>
-            </div>
-            <div class="title">Riwayat Lengkap</div>
-          </div>
-        </div>
-
-        <!-- PAGE CONTENT -->
-        <div class="page-content">
-          
-          <!-- FILTER TABS -->
-          <div class="history-filter">
-            <button class="filter-btn active" data-filter="all">Semua</button>
-            <button class="filter-btn" data-filter="approve">Disetujui</button>
-            <button class="filter-btn" data-filter="wait">Menunggu</button>
-            <button class="filter-btn" data-filter="reject">Ditolak</button>
-          </div>
-
-          <!-- HISTORY LIST -->
-          <div id="history-list" class="history-list">
-            <!-- History items akan dimuat di sini -->
-          </div>
-
-        </div>
-
+      
       </div>
     </div>
   </div>
 
+  <!-- Scripts - Urutan penting! -->
+  <script src="node_modules/framework7/framework7-bundle.min.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="my-app.js"></script>
   <script>
-    // Redirect to login page immediately if not logged in
+    // Jika belum login → arahkan ke auth.html
     if (!localStorage.getItem("isLoggedIn")) {
         window.location.href = "pages/auth.html";
     }
+
+    // Dark Mode Toggle Handler
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggle = document.getElementById('dark-mode-toggle');
+      const html = document.documentElement;
+
+      // Set initial state
+      if (html.classList.contains('dark')) {
+        toggle.querySelector('input').checked = true;
+      }
+
+      toggle.addEventListener('change', function (e) {
+        if (e.target.checked) {
+          html.classList.add('dark');
+        } else {
+          html.classList.remove('dark');
+        }
+      });
+    });
   </script>
-  <!-- Scripts - Urutan penting! -->
-  <script src="node_modules/framework7/framework7-bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="js/calendar.js"></script>
-  <script src="js/routes.js"></script>
-  <script src="js/api/auth.js"></script> <!-- Tambahkan script auth.js -->
-  <script src="my-app.js"></script>
 </body>
 </html>

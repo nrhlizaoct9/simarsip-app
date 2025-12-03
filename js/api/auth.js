@@ -1,5 +1,5 @@
 // js/api/auth.js
-const API_URL = 'http://localhost:8000/api'; // PASTIKAN PORT 8000
+const API_URL = 'http://localhost:4532/api'; // PASTIKAN PORT 8000
 
 async function loginUser(email, password) {
   try {
@@ -22,7 +22,7 @@ async function loginUser(email, password) {
     // Setelah login berhasil, selalu alihkan ke index.html secara langsung.
     // Ini memastikan aplikasi Framework7 dimuat ulang sepenuhnya.
     alert(`Login berhasil! Selamat datang ${user.name || 'Pengguna'}!`); // Opsional: Untuk feedback langsung
-    window.location.href = './index.html'; // Mengalihkan ke halaman utama
+    window.location.href = '../index.html'; // Mengalihkan ke halaman utama
     
     return true;
 

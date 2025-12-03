@@ -27,5 +27,9 @@ var routes = [
   {
     path: '/home/',
     url: '/index.html'
+  },
+  {
+    path: '/history/',
+    url: '/pages/history.html'
   }
 ];

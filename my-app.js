@@ -1,16 +1,21 @@
-// Initialize Framework7
 var app = new Framework7({
   el: '#app',
   name: 'SIMARSIP App',
-  theme: 'auto',
+  theme: 'md', // Force Material Design theme
+  dark: 'auto', // Use modern dark mode parameter
   routes: routes,
+  view: {
+    pushState: true,
+  },
+  panel: {
+    el: '.panel-left',
+    reveal: true,
+  },
   // Framework7 parameters
   touch: {
     tapHold: true
   },
-  // Enable auto dark theme
-  autoDarkTheme: true,
-  preloadPreviousPage: true // Keep this from HEAD
+  preloadPreviousPage: true
 });
 window.app = app;
 
@@ -142,6 +147,9 @@ app.on('pageAfterIn', function (page) {
     } catch (err) {
       console.error('[my-app.js] Error during calendar page initialization:', err);
     }
+  } else if (page.name === 'history') {
+    console.log('[my-app.js] History page initialized.');
+    initHistoryPage();
   }
 });
 
@@ -167,7 +175,38 @@ document.getElementById('btn-room').addEventListener('click', function() {
       <option value="GSG">GSG (Gedung Serba Guna)</option>
     </optgroup>
   `;
-
+// Mobile-specific enhancements
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // Better touch feedback
+  const touchElements = document.querySelectorAll('.menu-card, .status-card, .filter-btn');
+  
+  touchElements.forEach(element => {
+    element.addEventListener('touchstart', function() {
+      this.style.transform = 'scale(0.98)';
+    });
+    
+    element.addEventListener('touchend', function() {
+      this.style.transform = 'scale(1)';
+    });
+  });
+  
+  // Prevent double tap zoom on buttons
+  document.addEventListener('touchstart', function(e) {
+    if (e.target.classList.contains('menu-card') || 
+        e.target.classList.contains('filter-btn')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+  
+  // Handle orientation changes
+  window.addEventListener('orientationchange', function() {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
+  });
+  
+});
   // 2. Buat Dialog
   var dialog = app.dialog.create({
     title: 'Form Peminjaman Ruangan',
@@ -1344,24 +1383,8 @@ document.getElementById('btn-help').addEventListener('click', function() {
   showFeatureDialog('Pusat Bantuan', 'Temukan panduan penggunaan dan FAQ aplikasi SIMARSIP.');
 });
 
-// Navigasi manual: show/hide halaman (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-document.getElementById('btn-all-history').addEventListener('click', function() {
-  showHistoryPage();
-});
-
-function showHistoryPage() {
-  document.querySelector('[data-name="home"]').style.display = 'none';
-  document.querySelector('[data-name="history"]').style.display = 'block';
-  initHistoryPage(); // Initialize history page when shown
-}
-
-function showHomePage() {
-  document.querySelector('[data-name="history"]').style.display = 'none';
-  document.querySelector('[data-name="home"]').style.display = 'block';
-}
-
-// Fungsi untuk menampilkan dialog form (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-function showFormDialog(title, description) {
+// Fungsi untuk menampilkan dialog fitur (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
+function showFeatureDialog(title, description) {
   app.dialog.create({
     title: title,
     text: description,
@@ -1662,14 +1685,7 @@ function showHistoryDetail(id) {
   }).open();
 }
 
-// Handler tombol kembali khusus untuk halaman riwayat (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-document.getElementById('btn-back-history').addEventListener('click', function(e) {
-  e.preventDefault();
-  showHomePage();
-});
 
-// Inisialisasi halaman history saat pertama kali tampil (from 6fae0237d9db65c743bb07e6fdfda7c3504650ff)
-// initHistoryPage(); // This will be called when showHistoryPage is invoked
 
 // ============================================
 // PROFILE PAGE HANDLERS

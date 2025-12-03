@@ -3,7 +3,7 @@
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
       <div class="left">
-        <a href="#" class="link" onclick="app.view.main.router.back();">
+        <a href="#" class="link" onclick="console.log('Back button clicked!'); console.log('app exists:', typeof app !== 'undefined'); console.log('app.view.main exists:', typeof app !== 'undefined' && typeof app.view.main !== 'undefined'); console.log('app.view.main.router exists:', typeof app !== 'undefined' && typeof app.view.main !== 'undefined' && typeof app.view.main.router !== 'undefined'); if (typeof app !== 'undefined' && typeof app.view.main !== 'undefined' && typeof app.view.main.router !== 'undefined') { console.log('Router history length:', app.view.main.router.history.length); if (!app.view.main.router.history.length || app.view.main.router.history.length === 1) { app.view.main.router.navigate('/home/'); } else { app.view.main.router.back(); } } else { console.error('Framework7 app or router not initialized correctly!'); app.view.main.router.navigate('/home/');}">
           <i class="f7-icons">chevron_left</i>
           <span class="if-not-md">Kembali</span>
         </a>
@@ -23,7 +23,7 @@
               <div class="item-title-row">
                 <div class="item-title">Nama Lengkap</div>
               </div>
-              <div class="item-subtitle">HMIF</div>
+              <div class="item-subtitle" id="profile-name">HMIF</div>
             </div>
           </div>
         </li>
@@ -34,7 +34,7 @@
               <div class="item-title-row">
                 <div class="item-title">Email</div>
               </div>
-              <div class="item-subtitle">hmif@example.com</div>
+              <div class="item-subtitle" id="profile-email">hmif@example.com</div>
             </div>
           </div>
         </li>
@@ -45,7 +45,7 @@
               <div class="item-title-row">
                 <div class="item-title">Departemen</div>
               </div>
-              <div class="item-subtitle">Informatika</div>
+              <div class="item-subtitle" id="profile-department">Informatika</div>
             </div>
           </div>
         </li>
