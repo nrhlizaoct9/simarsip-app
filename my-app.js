@@ -387,7 +387,17 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `,
     buttons: [
-      { text: 'Batal', close: true },
+      {
+        text: 'Batal',
+        close: true,
+        onClick: function() {
+          app.toast.create({
+            text: 'Pengajuan dibatalkan',
+            position: 'center',
+            closeTimeout: 1500
+          }).open();
+        }
+      },
       {
         text: 'Ajukan',
         bold: true,
@@ -586,7 +596,17 @@ observeAndAttach('btn-dispen', 'click', function() {
       </div>
     `,
     buttons: [
-      { text: 'Batal', close: true },
+      {
+        text: 'Batal',
+        close: true,
+        onClick: function() {
+          app.toast.create({
+            text: 'Pengajuan dibatalkan',
+            position: 'center',
+            closeTimeout: 1500
+          }).open();
+        }
+      },
       {
         text: 'Ajukan',
         bold: true,
@@ -801,7 +821,17 @@ observeAndAttach('btn-item', 'click', function() {
       </div>
     `,
     buttons: [
-      { text: 'Batal', close: true },
+      {
+        text: 'Batal',
+        close: true,
+        onClick: function() {
+          app.toast.create({
+            text: 'Pengajuan dibatalkan',
+            position: 'center',
+            closeTimeout: 1500
+          }).open();
+        }
+      },
       {
         text: 'Ajukan',
         bold: true,
@@ -1121,6 +1151,17 @@ function showNotifications() {
     `,
     buttons: [
       {
+        text: 'Batal',
+        close: true,
+        onClick: function() {
+          app.toast.create({
+            text: 'Notifikasi ditutup',
+            position: 'center',
+            closeTimeout: 1500
+          }).open();
+        }
+      },
+      {
         text: 'Tandai Semua Sudah Dibaca',
         close: false,
         onClick: function() {
@@ -1130,10 +1171,6 @@ function showNotifications() {
             closeTimeout: 2000,
           }).open();
         }
-      },
-      {
-        text: 'Tutup',
-        close: true
       }
     ]
   }).open();
